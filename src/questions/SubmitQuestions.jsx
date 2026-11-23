@@ -7,6 +7,7 @@ import GamePreviewButton from './GamePreview'
 import { uploadQuestionImage } from './images'
 import QuestionImage from './QuestionImage'
 import { OpenAnswerField } from './choices'
+import { HazardTape } from '../ui'
 
 // The server accepts up to 20 per submission for Escape Room (one chapter)
 const MAX_QUESTIONS = 20
@@ -344,10 +345,13 @@ export default function SubmitQuestions() {
 
   if (submittedCount !== null) {
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-board p-4 text-ink">
-        <div className="w-full max-w-md rounded-2xl bg-card p-8 text-center shadow-xl">
+      <main className="vault-bg flex min-h-dvh items-center justify-center p-4 text-ink">
+        <div className="w-full max-w-md overflow-hidden rounded-2xl border-2 border-ok bg-card text-center shadow-2xl box-glow-ok">
+          <HazardTape />
+          <div className="p-8">
           <div className="text-5xl">📬</div>
-          <h1 className="mt-3 text-3xl font-black text-accent">Thanks!</h1>
+          <p className="mt-3 font-display text-xs font-bold uppercase tracking-[0.4em] text-ok">● Transmission received</p>
+          <h1 className="mt-2 font-display text-3xl font-black uppercase tracking-widest text-ok glow-ok">Thanks!</h1>
           <p className="mt-3 text-ink">
             {submittedCount === 1 ? 'Your question was' : `Your ${submittedCount} questions were`} sent
             to the PLTL reviewers. Approved questions will show up in the game.
@@ -358,21 +362,22 @@ export default function SubmitQuestions() {
           >
             Submit More Questions
           </button>
+          </div>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="min-h-dvh bg-board px-4 py-8 text-ink">
+    <main className="vault-bg min-h-dvh px-4 pb-8 text-ink">
+      <HazardTape className="-mx-4 mb-6 h-2" />
       <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6">
         <BackToGame />
 
         <header className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-info">
-            PLTL Escape Room
-          </p>
-          <h1 className="mt-2 text-3xl font-black text-accent sm:text-4xl">Submit Questions</h1>
+          <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">● New locks needed</p>
+          <h1 className="mt-2 font-display text-3xl font-black uppercase tracking-widest text-accent glow-accent sm:text-4xl">Submit Questions</h1>
+          <p className="mt-1 font-display text-[11px] font-bold uppercase tracking-[0.3em] text-muted">PLTL Escape Room</p>
           <p className="mt-2 text-muted">
             Add up to {MAX_QUESTIONS} questions for one chapter. Each question becomes a lock: students type the answer to open it.
             A PLTL reviewer checks each one before it&apos;s used.

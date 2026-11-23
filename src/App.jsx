@@ -21,8 +21,8 @@ function App() {
 
   if (!isConfigured) return <NotConfigured />
   if (path === '/join') return <StudentJoin />
-  // The submit form keeps a light, paper look (see index.css); review wears the game's vault look
-  if (path === '/submit') return <div className="theme-paper"><SubmitQuestions /></div>
+  // Every page wears the game's vault look (index.css still has .theme-paper if a light page is ever wanted)
+  if (path === '/submit') return <SubmitQuestions />
   if (path === '/review') return <ReviewDashboard />
   return <LeaderApp />
 }
