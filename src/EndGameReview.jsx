@@ -27,7 +27,7 @@ function TeamResult({ team, name }) {
   return (
     <span
       className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-bold ${
-        team.opened ? 'border-green-700 bg-green-50 text-green-800' : 'border-neutral-400 bg-white text-neutral-600'
+        team.opened ? 'border-ok bg-ok-soft text-ok' : 'border-line bg-panel text-muted'
       }`}
     >
       {team.opened ? '🔓' : '🔒'} {name} · lock {team.lock_no + 1}
@@ -64,21 +64,21 @@ export default function EndGameReview({ gameId, hostToken, onClose }) {
   return (
     <div className="fixed inset-0 z-40 overflow-y-auto bg-board p-3 text-ink sm:p-6">
       <div className="mx-auto max-w-4xl">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-card p-4">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-line bg-card p-4">
           <div>
             <h2 className="text-2xl font-black text-accent">Review this game&apos;s locks</h2>
-            <p className="text-sm text-neutral-800">
+            <p className="text-sm text-muted">
               Every answer is shown. Open a question to flag it for the reviewers if something&apos;s off.
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-lg border-2 border-ink bg-accent px-5 py-2 font-bold text-white hover:opacity-90">
+          <button type="button" onClick={onClose} className="rounded-lg border-2 border-line bg-accent px-5 py-2 font-bold text-on-accent hover:opacity-90">
             Back to results
           </button>
         </div>
 
-        {errorMessage && <p className="rounded-lg bg-white p-3 text-red-700">{errorMessage}</p>}
-        {!data && !errorMessage && <p className="rounded-lg bg-white p-3">Loading the questions...</p>}
-        {data && rounds.length === 0 && <p className="rounded-lg bg-white p-3">This game didn&apos;t get to its locks.</p>}
+        {errorMessage && <p className="rounded-lg bg-panel p-3 text-bad">{errorMessage}</p>}
+        {!data && !errorMessage && <p className="rounded-lg bg-panel p-3">Loading the questions...</p>}
+        {data && rounds.length === 0 && <p className="rounded-lg bg-panel p-3">This game didn&apos;t get to its locks.</p>}
 
         <ol className="space-y-2">
           {rounds.map((round, index) => (
@@ -86,17 +86,17 @@ export default function EndGameReview({ gameId, hostToken, onClose }) {
               <button
                 type="button"
                 onClick={() => setOpenIndex(index)}
-                className="w-full rounded-lg border-2 border-ink bg-card p-3 text-left hover:bg-amber-100"
+                className="w-full rounded-lg border-2 border-line bg-card p-3 text-left hover:bg-hover"
               >
                 <span className="flex items-start gap-3">
                   <span className="w-7 shrink-0 text-right font-black text-accent">{index + 1}.</span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-bold">{round.question.question_text}</span>
-                    <span className="text-sm text-green-800">Answer: <span className="font-bold">{round.question.answer_text}</span></span>
-                    {round.question.topic_name && <span className="ml-2 text-xs text-neutral-600">· {round.question.topic_name}</span>}
+                    <span className="text-sm text-ok">Answer: <span className="font-bold">{round.question.answer_text}</span></span>
+                    {round.question.topic_name && <span className="ml-2 text-xs text-muted">· {round.question.topic_name}</span>}
                   </span>
                   {round.question.flags.length > 0 && (
-                    <span className="shrink-0 rounded bg-accent px-1.5 text-xs font-bold text-white">⚑ flagged</span>
+                    <span className="shrink-0 rounded bg-accent px-1.5 text-xs font-bold text-on-accent">⚑ flagged</span>
                   )}
                 </span>
                 <span className="mt-2 flex flex-wrap gap-1 pl-10">
@@ -159,14 +159,14 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
     }
   }
 
-  const input = 'w-full rounded-lg border-2 border-neutral-500 bg-white px-3 py-2 text-ink placeholder-neutral-500'
+  const input = 'w-full rounded-lg border-2 border-line bg-panel px-3 py-2 text-ink placeholder-muted'
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <section className="my-6 w-full max-w-2xl rounded-2xl border-4 border-ink bg-card p-6 text-ink shadow-2xl">
+      <section className="my-6 w-full max-w-2xl rounded-2xl border-4 border-line bg-card p-6 text-ink shadow-2xl">
         <div className="flex items-start justify-between gap-3">
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-800">{question.topic_name || 'Lock question'}</p>
-          <button type="button" onClick={onClose} className="rounded-lg border-2 border-ink bg-white px-3 py-1 text-sm font-bold hover:bg-amber-100">
+          <p className="text-xs font-bold uppercase tracking-widest text-info">{question.topic_name || 'Lock question'}</p>
+          <button type="button" onClick={onClose} className="rounded-lg border-2 border-line bg-panel px-3 py-1 text-sm font-bold hover:bg-hover">
             Close ✕
           </button>
         </div>
@@ -174,7 +174,7 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
         <h3 className="mt-3 text-xl font-bold">{question.question_text}</h3>
         <QuestionImage path={question.image_path} className="mt-3 max-h-64" />
 
-        <p className="mt-4 rounded-lg border-2 border-green-700 bg-green-700 p-3 font-bold text-white">
+        <p className="mt-4 rounded-lg border-2 border-ok bg-ok p-3 font-bold text-on-accent">
           Answer: {question.answer_text}
           {question.accepted_answers.length > 0 && <span className="font-normal"> (also: {question.accepted_answers.join(', ')})</span>}
         </p>
@@ -184,7 +184,7 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
         </div>
 
         {question.flags.length > 0 && (
-          <div className="mt-3 rounded-lg border-2 border-accent bg-amber-50 p-3 text-sm">
+          <div className="mt-3 rounded-lg border-2 border-accent bg-warn-soft p-3 text-sm">
             <p className="font-bold text-accent">Already flagged in this game:</p>
             <ul className="mt-1 list-disc pl-5">
               {question.flags.map((flag, index) => (
@@ -196,9 +196,9 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
           </div>
         )}
 
-        <form onSubmit={submit} className="mt-5 space-y-3 rounded-xl border-2 border-ink bg-amber-100 p-4">
+        <form onSubmit={submit} className="mt-5 space-y-3 rounded-xl border-2 border-line bg-warn-soft p-4">
           <p className="font-bold text-accent">⚑ Flag for revision</p>
-          <p className="text-xs text-neutral-800">
+          <p className="text-xs text-muted">
             Reviewers see this in their queue as &ldquo;Approved question needs revision&rdquo;. The question stays in
             games until they change it.
           </p>
@@ -226,12 +226,12 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
           <button
             type="submit"
             disabled={busy || !reason || !note.trim() || !name.trim()}
-            className="w-full rounded-lg border-2 border-ink bg-accent px-5 py-2 font-bold text-white hover:opacity-90 disabled:opacity-50"
+            className="w-full rounded-lg border-2 border-line bg-accent px-5 py-2 font-bold text-on-accent hover:opacity-90 disabled:opacity-50"
           >
             {busy ? 'Sending...' : 'Send to reviewers'}
           </button>
-          {message && <p className="text-sm font-bold text-green-700">{message}</p>}
-          {errorMessage && <p className="text-sm font-bold text-red-700">{errorMessage}</p>}
+          {message && <p className="text-sm font-bold text-ok">{message}</p>}
+          {errorMessage && <p className="text-sm font-bold text-bad">{errorMessage}</p>}
         </form>
       </section>
     </div>

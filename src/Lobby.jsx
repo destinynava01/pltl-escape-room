@@ -5,11 +5,11 @@ import { DEFAULT_HINT_PENALTY, DEFAULT_LOCKS, LOCK_CHOICES, MAX_TEAMS, MIN_TEAMS
 import { saveSession } from './session'
 import { Button, Label } from './ui'
 
-const card = 'rounded-xl border-2 border-ink bg-card p-6 shadow-md'
-const field = 'w-full rounded-lg border-2 border-ink bg-white px-3 py-2 font-bold text-ink outline-none focus:outline-2 focus:outline-accent'
+const card = 'rounded-xl border-2 border-line bg-card/90 p-6 shadow-lg backdrop-blur'
+const field = 'w-full rounded-lg border-2 border-line bg-panel px-3 py-2 font-bold text-ink outline-none focus:outline-2 focus:outline-accent'
 const choice = (on) =>
   `rounded-lg border-2 px-3 py-2 text-sm font-bold transition ${
-    on ? 'border-accent bg-red-100 text-accent' : 'border-ink bg-white text-ink hover:bg-amber-100'
+    on ? 'border-accent bg-warn-soft text-accent box-glow-accent' : 'border-line bg-panel text-ink hover:bg-hover'
   }`
 
 // Leader lobby. Same order as the Jeopardy lobby: create game -> teams -> finalize -> subject / course /
@@ -162,30 +162,30 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
   const joinUrl = session ? `${window.location.origin}/join?code=${session.joinCode}` : ''
 
   return (
-    <main className="min-h-dvh bg-board p-4 text-ink sm:p-8">
+    <main className="vault-bg min-h-dvh p-4 text-ink sm:p-8">
       {hasGame && (
         <button
           onClick={onOpenRace}
-          className="fixed right-4 top-4 z-20 rounded-lg border-2 border-ink bg-white px-4 py-2 font-bold hover:bg-amber-100"
+          className="fixed right-4 top-4 z-20 rounded-lg border-2 border-line bg-panel px-4 py-2 font-bold hover:bg-hover"
         >
           Back to the race
         </button>
       )}
 
       <header className="mx-auto mb-8 max-w-5xl text-center">
-        <p className="text-sm font-bold uppercase tracking-[0.3em] text-emerald-800">{SITE_NAME}</p>
-        <h1 className="mt-2 text-4xl font-black uppercase tracking-wide text-accent">Leader Lobby</h1>
-        <p className="mt-3 text-neutral-700">Manage students and prepare your teams before the escape begins.</p>
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-info">{SITE_NAME}</p>
+        <h1 className="mt-2 font-display text-4xl font-black uppercase tracking-widest text-accent glow-accent">Leader Lobby</h1>
+        <p className="mt-3 text-muted">Manage students and prepare your teams before the escape begins.</p>
         <p className="mt-2 text-sm font-bold">
-          <a href="/submit" className="text-emerald-800 hover:text-emerald-600">Submit questions</a>
-          <span className="mx-2 text-neutral-500">·</span>
-          <a href="/review" className="text-emerald-800 hover:text-emerald-600">Review queue</a>
+          <a href="/submit" className="text-info hover:brightness-125">Submit questions</a>
+          <span className="mx-2 text-muted">·</span>
+          <a href="/review" className="text-info hover:brightness-125">Review queue</a>
         </p>
 
         <div className="mt-6">
           {session ? (
             <div className="flex flex-col items-center gap-3">
-              <p className="font-bold text-green-700">Game Ready!</p>
+              <p className="font-bold text-ok">Game Ready!</p>
               <Button
                 variant="outline"
                 className="!px-4 !py-2 text-sm"
@@ -200,27 +200,27 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
           ) : (
             <Button onClick={createGame} disabled={busy}>{busy ? 'Creating Game…' : 'Create New Game'}</Button>
           )}
-          {message && <p className="mt-3 text-green-700">{message}</p>}
-          {errorMessage && <p className="mt-3 text-red-700">{errorMessage}</p>}
+          {message && <p className="mt-3 text-ok">{message}</p>}
+          {errorMessage && <p className="mt-3 text-bad">{errorMessage}</p>}
         </div>
       </header>
 
       <section className="mx-auto grid max-w-5xl gap-6 md:grid-cols-2">
         {/* Game information */}
         <div className={card}>
-          <h2 className="text-xl font-black uppercase text-accent">Game Information</h2>
+          <h2 className="font-display text-lg font-black uppercase tracking-widest text-accent">Game Information</h2>
           <p className="mt-4">
             Join Code:{' '}
             {session
               ? <span className="text-3xl font-black tracking-widest text-accent">{session.joinCode}</span>
-              : <span className="text-neutral-600">Not created yet</span>}
+              : <span className="text-muted">Not created yet</span>}
           </p>
           {session && (
             <div className="mt-6 flex flex-col items-center">
-              <div className="rounded-xl border-2 border-ink bg-white p-4">
+              <div className="rounded-xl border-2 border-accent bg-white p-4 box-glow-accent">
                 <QRCodeSVG value={joinUrl} size={200} title={`Join code ${session.joinCode}`} />
               </div>
-              <p className="mt-3 text-center text-sm text-neutral-600">Students scan this with their phone camera to join.</p>
+              <p className="mt-3 text-center text-sm text-muted">Students scan this with their phone camera to join.</p>
               <Button variant="accent" className="mt-3" onClick={() => { window.location.href = `/join?code=${session.joinCode}` }}>
                 Open student join page
               </Button>
@@ -230,12 +230,12 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
 
         {/* Teams, then game setup once finalized */}
         <div className={card}>
-          <h2 className="text-xl font-black uppercase text-accent">Teams</h2>
+          <h2 className="font-display text-lg font-black uppercase tracking-widest text-accent">Teams</h2>
           <div className="mt-4 space-y-3">
             {teamNames.map((name, i) => (
-              <div key={i} className="rounded-lg border-2 border-ink bg-white p-4">
+              <div key={i} className="rounded-lg border-2 border-line bg-panel p-4">
                 <div className="flex items-center gap-3">
-                  <span className="h-5 w-5 shrink-0 rounded-full border-2 border-ink" style={{ background: TEAM_COLORS[i] }} />
+                  <span className="h-5 w-5 shrink-0 rounded-full border-2 border-line" style={{ background: TEAM_COLORS[i] }} />
                   <input
                     className={field}
                     value={name}
@@ -249,7 +249,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                       type="button"
                       onClick={() => removeTeam(i)}
                       aria-label={`Remove team ${i + 1}`}
-                      className="rounded-lg border-2 border-ink px-3 py-2 font-bold hover:bg-orange-100"
+                      className="rounded-lg border-2 border-line px-3 py-2 font-bold hover:bg-hover"
                     >
                       ✕
                     </button>
@@ -267,17 +267,17 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
             {finalized ? 'Teams Finalized' : 'Finalize Teams'}
           </Button>
           {finalized && (
-            <button type="button" className="mt-2 text-sm font-bold text-emerald-800 hover:text-emerald-600" onClick={() => setFinalized(false)}>
+            <button type="button" className="mt-2 text-sm font-bold text-info hover:brightness-125" onClick={() => setFinalized(false)}>
               Edit teams
             </button>
           )}
 
           {finalized && (
-            <div className="mt-6 border-t-2 border-ink pt-4">
-              {catalogError && <p className="text-red-700">{catalogError}</p>}
-              {!catalog && !catalogError && <p className="text-neutral-600">Loading subjects…</p>}
+            <div className="mt-6 border-t-2 border-line pt-4">
+              {catalogError && <p className="text-bad">{catalogError}</p>}
+              {!catalog && !catalogError && <p className="text-muted">Loading subjects…</p>}
               {catalog && subjects.length === 0 && (
-                <p className="text-neutral-700">
+                <p className="text-muted">
                   No subjects have approved open-response questions for Escape Room yet. Submit some, or ask the creator to share a subject with Escape Room.
                 </p>
               )}
@@ -324,28 +324,28 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                 <>
                   <div className="mt-4 flex items-baseline justify-between">
                     <Label>{showProfessorStep ? '4' : '3'}. Chapters</Label>
-                    <span className="text-xs text-neutral-600">{pickedTopics.length} selected</span>
+                    <span className="text-xs text-muted">{pickedTopics.length} selected</span>
                   </div>
                   <div className="mt-1 flex gap-3 text-xs font-bold">
-                    <button type="button" className="text-emerald-800 hover:text-emerald-600" onClick={() => setPickedTopics(topics.map((t) => t.id))}>Select all</button>
-                    <button type="button" className="text-emerald-800 hover:text-emerald-600" onClick={() => setPickedTopics([])}>Clear</button>
+                    <button type="button" className="text-info hover:brightness-125" onClick={() => setPickedTopics(topics.map((t) => t.id))}>Select all</button>
+                    <button type="button" className="text-info hover:brightness-125" onClick={() => setPickedTopics([])}>Clear</button>
                   </div>
                   <ul className="mt-2 max-h-56 space-y-1 overflow-y-auto pr-1">
                     {topics.map((t) => {
                       const on = pickedTopics.includes(t.id)
                       return (
                         <li key={t.id}>
-                          <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 px-3 py-2 text-sm transition hover:bg-amber-100 ${on ? 'border-accent bg-red-50' : 'border-ink bg-white'}`}>
-                            <input type="checkbox" checked={on} onChange={() => toggleTopic(t.id)} className="h-4 w-4 accent-amber-700" />
+                          <label className={`flex cursor-pointer items-center gap-3 rounded-lg border-2 px-3 py-2 text-sm transition hover:bg-hover ${on ? 'border-accent bg-warn-soft' : 'border-line bg-panel'}`}>
+                            <input type="checkbox" checked={on} onChange={() => toggleTopic(t.id)} className="h-4 w-4 accent-amber-400" />
                             <span className="flex-1 font-bold">{t.topic_name}</span>
-                            <span className="text-xs text-neutral-600">{t.question_count} question{t.question_count === 1 ? '' : 's'}</span>
+                            <span className="text-xs text-muted">{t.question_count} question{t.question_count === 1 ? '' : 's'}</span>
                           </label>
                         </li>
                       )
                     })}
                   </ul>
                   {pickedTopics.length > 0 && (
-                    <p className={`mt-2 text-xs font-bold ${questionEstimate < lockCount ? 'text-red-700' : 'text-neutral-700'}`}>
+                    <p className={`mt-2 text-xs font-bold ${questionEstimate < lockCount ? 'text-bad' : 'text-muted'}`}>
                       {questionEstimate < lockCount
                         ? `These chapters have ${questionEstimate} open-response question${questionEstimate === 1 ? '' : 's'}. ${lockCount} locks need ${lockCount}: pick more chapters or fewer locks.`
                         : `${lockCount} locks, picked at random from these ${questionEstimate} questions. Every team gets the same locks in its own order.`}
@@ -365,7 +365,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                       </button>
                     ))}
                   </div>
-                  <p className="mt-1 text-xs text-neutral-600">A hint adds {DEFAULT_HINT_PENALTY} seconds to that team&apos;s time.</p>
+                  <p className="mt-1 text-xs text-muted">A hint adds {DEFAULT_HINT_PENALTY} seconds to that team&apos;s time.</p>
 
                   <Button className="mt-4 w-full text-lg" disabled={busy || pickedTopics.length === 0 || questionEstimate < lockCount} onClick={start}>
                     {busy ? 'Starting…' : 'Start the Escape'}
@@ -379,7 +379,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
         {/* Students: they join from their phones; the leader checks them in the room and picks their team */}
         <div className={`${card} md:col-span-2`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-black uppercase text-accent">Students Waiting for Approval</h2>
+            <h2 className="font-display text-lg font-black uppercase tracking-widest text-accent">Students Waiting for Approval</h2>
             <Button
               variant="outline"
               className="!px-4 !py-2"
@@ -390,16 +390,16 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
               🎲 Randomly Assign Teams ({waiting.length})
             </Button>
           </div>
-          <p className="mt-2 text-sm text-neutral-600">Random assignment only includes students you&apos;ve checked are in the room.</p>
+          <p className="mt-2 text-sm text-muted">Random assignment only includes students you&apos;ve checked are in the room.</p>
 
-          {!session && <p className="mt-4 text-neutral-700">Create the game first, then students can join with the code.</p>}
-          {session && !finalized && <p className="mt-4 text-neutral-700">Finalize the teams so you can put students on them.</p>}
-          {session && players.length === 0 && <p className="mt-4 text-neutral-700">No students have joined yet.</p>}
+          {!session && <p className="mt-4 text-muted">Create the game first, then students can join with the code.</p>}
+          {session && !finalized && <p className="mt-4 text-muted">Finalize the teams so you can put students on them.</p>}
+          {session && players.length === 0 && <p className="mt-4 text-muted">No students have joined yet.</p>}
 
           {waiting.length > 0 && (
             <ul className="mt-4 space-y-2">
               {waiting.map((p) => (
-                <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border-2 border-ink bg-white px-3 py-2">
+                <li key={p.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border-2 border-line bg-panel px-3 py-2">
                   <span className="font-bold">{p.display_name}</span>
                   <span className="flex flex-wrap gap-2">
                     {teamNames.map((_, i) => (
@@ -408,7 +408,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                         type="button"
                         disabled={!finalized || busy}
                         onClick={() => studentAction({ action: 'approve_player', player_id: p.id, team_index: i })}
-                        className="rounded-lg border-2 border-ink px-3 py-1 text-sm font-bold text-white disabled:opacity-40"
+                        className="rounded-lg border-2 border-line px-3 py-1 text-sm font-bold text-white disabled:opacity-40"
                         style={{ background: TEAM_COLORS[i] }}
                       >
                         {teamLabel(i)}
@@ -418,7 +418,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                       type="button"
                       disabled={busy}
                       onClick={() => studentAction({ action: 'remove_player', player_id: p.id })}
-                      className="rounded-lg border-2 border-ink px-3 py-1 text-sm font-bold hover:bg-orange-100"
+                      className="rounded-lg border-2 border-line px-3 py-1 text-sm font-bold hover:bg-hover"
                     >
                       Remove
                     </button>
@@ -433,9 +433,9 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
               {teamNames.map((_, i) => {
                 const members = players.filter((p) => p.approval_status === 'approved' && p.team_index === i)
                 return (
-                  <div key={i} className="rounded-lg border-2 border-ink bg-white p-3">
+                  <div key={i} className="rounded-lg border-2 border-line bg-panel p-3">
                     <p className="flex items-center gap-2 font-black">
-                      <span className="h-3 w-3 rounded-full border border-ink" style={{ background: TEAM_COLORS[i] }} />
+                      <span className="h-3 w-3 rounded-full border border-line" style={{ background: TEAM_COLORS[i] }} />
                       {teamLabel(i)} ({members.length})
                     </p>
                     <ul className="mt-1 space-y-1 text-sm">
@@ -447,7 +447,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                             aria-label={`Remove ${p.display_name}`}
                             disabled={busy}
                             onClick={() => studentAction({ action: 'remove_player', player_id: p.id })}
-                            className="text-xs font-bold text-red-700 hover:text-red-600"
+                            className="text-xs font-bold text-bad hover:brightness-125"
                           >
                             ✕
                           </button>

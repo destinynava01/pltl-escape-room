@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { escPlay, watchGame } from './api'
 import QuestionImage from './questions/QuestionImage'
 import { clock } from './time'
-import { Button, CenterCard, Label } from './ui'
+import { Button, CenterCard, HazardTape, Label } from './ui'
 
 const STORAGE_KEY = 'pltlEscapeStudent'
 const DEVICE_KEY = 'pltlEscapeDevice'
-const field = 'w-full rounded-lg border-2 border-ink bg-white px-4 py-3 text-center text-xl font-black text-ink outline-none focus:outline-2 focus:outline-accent'
+const field = 'w-full rounded-lg border-2 border-line bg-black/50 px-4 py-3 text-center font-mono text-xl font-black text-ink outline-none placeholder-muted focus:border-accent focus:outline-2 focus:outline-accent'
 
 // A random id this phone keeps, so one phone can't become two students
 function deviceId() {
@@ -65,7 +65,7 @@ function JoinForm({ onJoined, notice }) {
   return (
     <CenterCard title="Join the Escape">
       <form onSubmit={join} className="mt-4 space-y-4">
-        {notice && <p className="font-bold text-neutral-700">{notice}</p>}
+        {notice && <p className="font-bold text-muted">{notice}</p>}
         <div>
           <Label>Game code</Label>
           <input className={`${field} mt-2 uppercase tracking-widest`} maxLength={6} placeholder="ABC123" value={code}
@@ -78,7 +78,7 @@ function JoinForm({ onJoined, notice }) {
         <Button type="submit" variant="accent" disabled={busy || code.length < 6 || !name.trim()} className="w-full">
           {busy ? 'Joining…' : 'Join'}
         </Button>
-        {error && <p className="font-bold text-red-700">{error}</p>}
+        {error && <p className="font-bold text-bad">{error}</p>}
       </form>
     </CenterCard>
   )
@@ -89,7 +89,7 @@ function Room({ saved, onLeave }) {
   const [error, setError] = useState('')
   const [typed, setTyped] = useState('')
   const [sending, setSending] = useState(false)
-  const [feedback, setFeedback] = useState(null) // { kind: 'wrong' | 'close' | 'right' | 'info', text }
+  const [feedback, setFeedback] = useState(null) // { kind: 'wrong' | 'close' | 'right' | 'info', text, at } (at replays the animation)
   const [now, setNow] = useState(() => Date.now())
   const lastLock = useRef(null)
 
@@ -101,7 +101,7 @@ function Room({ saved, onLeave }) {
           // A new lock (opened by anyone on the team): clear the box and the old message
           const lock = data.lock?.lock_no ?? null
           if (lock !== lastLock.current) {
-            if (lastLock.current !== null && lock !== null) setFeedback({ kind: 'right', text: `🔓 Lock ${lastLock.current + 1} is open!` })
+            if (lastLock.current !== null && lock !== null) setFeedback({ kind: 'right', text: `✅ Access granted · lock ${lastLock.current + 1} open`, at: Date.now() })
             lastLock.current = lock
             setTyped('')
           }
@@ -136,11 +136,12 @@ function Room({ saved, onLeave }) {
     setError('')
     try {
       const result = await escPlay({ action: 'answer', player_id: saved.playerId, device_id: deviceId(), answer, lock_no: view.lock.lock_no })
-      if (result.moved_on) setFeedback({ kind: 'info', text: result.message })
-      else if (result.escaped) setFeedback({ kind: 'right', text: '🎉 That was the last lock. You escaped!' })
-      else if (result.correct) setFeedback({ kind: 'right', text: '🔓 Correct! Next lock…' })
-      else if (result.close) setFeedback({ kind: 'close', text: 'So close! Check your spelling, or your leader may accept it.' })
-      else setFeedback({ kind: 'wrong', text: 'Not quite. Try again!' })
+      const at = Date.now()
+      if (result.moved_on) setFeedback({ kind: 'info', text: result.message, at })
+      else if (result.escaped) setFeedback({ kind: 'right', text: '🎉 Access granted · you escaped!', at })
+      else if (result.correct) setFeedback({ kind: 'right', text: '✅ Access granted · next lock…', at })
+      else if (result.close) setFeedback({ kind: 'close', text: '⚠ So close · check your spelling, or your leader may accept it', at })
+      else setFeedback({ kind: 'wrong', text: '⛔ Access denied · try again', at })
       if (!result.correct) setTyped('')
       await check()
     } catch (e) {
@@ -163,7 +164,7 @@ function Room({ saved, onLeave }) {
     }
   }
 
-  if (!view) return <CenterCard title="Joining…">{error && <p className="mt-4 font-bold text-red-700">{error}</p>}</CenterCard>
+  if (!view) return <CenterCard title="Joining…">{error && <p className="mt-4 font-bold text-bad">{error}</p>}</CenterCard>
 
   const { game, player, teams, team, lock, offset } = view
   const myTeam = player.team_index !== null ? teams[player.team_index] : null
@@ -174,10 +175,10 @@ function Room({ saved, onLeave }) {
   const header = (
     <div className="mb-4 flex items-center justify-between gap-3">
       <p className="flex items-center gap-2 font-black">
-        {myTeam && <span aria-hidden="true" className="h-4 w-4 rounded-full border-2 border-ink" style={{ background: myTeam.color }} />}
+        {myTeam && <span aria-hidden="true" className="h-4 w-4 rounded-full border-2 border-line" style={{ background: myTeam.color }} />}
         {myTeam?.name ?? player.display_name}
       </p>
-      {game.status !== 'setup' && <p className="font-mono text-xl font-black tabular-nums">{clock(elapsed + (team?.penalty_seconds ?? 0))}</p>}
+      {game.status !== 'setup' && <p className="font-mono text-2xl font-black tabular-nums text-bad glow-bad">{clock(elapsed + (team?.penalty_seconds ?? 0))}</p>}
     </div>
   )
 
@@ -186,12 +187,12 @@ function Room({ saved, onLeave }) {
     return (
       <CenterCard title={player.approval_status === 'approved' ? 'You’re in!' : 'Almost in…'}>
         <p className="mt-4 text-lg font-bold">{player.display_name}</p>
-        <p className="mt-2 text-neutral-700">
+        <p className="mt-2 text-muted">
           {player.approval_status !== 'approved'
             ? 'Waiting for your leader to put you on a team.'
             : `You're on ${myTeam?.name}. Waiting for the escape to start.`}
         </p>
-        <button type="button" onClick={() => onLeave('')} className="mt-6 text-sm font-bold text-neutral-600 underline">Leave this game</button>
+        <button type="button" onClick={() => onLeave('')} className="mt-6 text-sm font-bold text-muted underline">Leave this game</button>
       </CenterCard>
     )
   }
@@ -202,7 +203,9 @@ function Room({ saved, onLeave }) {
         <span
           key={k}
           className={`flex h-9 w-9 items-center justify-center rounded-md border-2 text-lg ${
-            k < (team?.locks_open ?? 0) ? 'border-green-700 bg-green-100' : k === team?.current_lock ? 'border-accent bg-amber-100' : 'border-neutral-400 bg-white opacity-60'
+            k < (team?.locks_open ?? 0) ? 'unlock-pop border-ok bg-ok-soft box-glow-ok'
+              : k === team?.current_lock ? 'animate-pulse border-accent bg-warn-soft box-glow-accent'
+              : 'border-line bg-panel opacity-50 grayscale'
           }`}
         >
           {k < (team?.locks_open ?? 0) ? '🔓' : '🔒'}
@@ -214,38 +217,45 @@ function Room({ saved, onLeave }) {
   // Escaped, or the game is over
   if (team?.escaped || game.status === 'finished') {
     return (
-      <main className="min-h-dvh bg-board p-4 text-ink">
-        <div className="mx-auto max-w-md rounded-2xl border-4 border-ink bg-card p-6 text-center shadow-xl">
+      <main className="vault-bg min-h-dvh p-4 text-ink">
+        <div className={`mx-auto max-w-md overflow-hidden rounded-2xl border-2 bg-card text-center shadow-2xl ${team?.escaped ? 'border-ok box-glow-ok' : 'border-bad'}`}>
+          <HazardTape />
+          <div className="p-6">
           {header}
           {locks}
           <div className="text-6xl">{team?.escaped ? '🎉' : '⏱️'}</div>
-          <h1 className="mt-2 text-3xl font-black text-accent">{team?.escaped ? 'You escaped!' : 'Time’s up!'}</h1>
+          <h1 className={`mt-2 font-display text-3xl font-black uppercase tracking-wide ${team?.escaped ? 'text-ok glow-ok' : 'text-bad glow-bad'}`}>
+            {team?.escaped ? 'You escaped!' : 'Time’s up!'}
+          </h1>
           <p className="mt-2 text-lg font-bold">
             {team?.escaped ? `Time ${clock(team.total_seconds)}` : `${team?.locks_open ?? 0} of ${game.lock_count} locks open`}
             {team?.hints > 0 && ` (incl. ${clock(team.penalty_seconds)} for hints)`}
           </p>
-          <p className="mt-1 text-neutral-700">
+          <p className="mt-1 text-muted">
             {game.status === 'finished' ? `Your team placed #${team?.place}.` : `Currently #${team?.place}. Waiting for the other teams…`}
           </p>
+          </div>
         </div>
       </main>
     )
   }
 
   return (
-    <main className="min-h-dvh bg-board p-4 text-ink">
-      <div className="mx-auto max-w-md rounded-2xl border-4 border-ink bg-card p-5 shadow-xl">
+    <main className="vault-bg min-h-dvh p-4 text-ink">
+      <div className="mx-auto max-w-md overflow-hidden rounded-2xl border-2 border-line bg-card shadow-2xl">
+        <HazardTape />
+        <div className="p-5">
         {header}
         {locks}
 
         {lock ? (
           <>
-            <Label>Lock {lock.lock_no + 1} of {game.lock_count}</Label>
-            <h1 className="mt-2 text-xl font-bold">{lock.question_text}</h1>
+            <p className="font-display text-sm font-black uppercase tracking-[0.3em] text-accent glow-accent">🔒 Lock {lock.lock_no + 1} / {game.lock_count}</p>
+            <h1 className="mt-2 text-xl font-bold leading-snug">{lock.question_text}</h1>
             <QuestionImage path={lock.image_path} className="mt-3 max-h-56" />
 
             {lock.hint && (
-              <p className="mt-3 rounded-lg border-2 border-dashed border-accent bg-amber-50 p-3 text-center font-mono text-xl font-black tracking-wider">
+              <p className="mt-3 rounded-lg border-2 border-dashed border-accent bg-warn-soft p-3 text-center font-mono text-xl font-black tracking-wider">
                 💡 {lock.hint}
               </p>
             )}
@@ -261,36 +271,40 @@ function Room({ saved, onLeave }) {
                 autoCapitalize="off"
                 aria-label="Your answer"
               />
-              <Button type="submit" variant="accent" className="w-full text-lg" disabled={sending || !typed.trim()}>
+              <Button type="submit" className="w-full text-lg" disabled={sending || !typed.trim()}>
                 {sending ? 'Checking…' : '🔑 Unlock'}
               </Button>
             </form>
 
             {feedback && (
-              <p className={`mt-3 rounded-lg p-2 text-center font-bold ${
-                feedback.kind === 'right' ? 'bg-green-100 text-green-800'
-                  : feedback.kind === 'close' ? 'bg-amber-100 text-amber-900'
-                  : feedback.kind === 'wrong' ? 'bg-red-100 text-red-800'
-                  : 'bg-white text-neutral-800'
-              }`}>
+              <p
+                key={feedback.at}
+                role="status"
+                className={`mt-3 rounded-lg border-2 p-2 text-center font-display text-sm font-black uppercase tracking-wide ${
+                  feedback.kind === 'right' ? 'flash-ok border-ok bg-ok-soft text-ok'
+                    : feedback.kind === 'close' ? 'shake border-warn bg-warn-soft text-warn'
+                    : feedback.kind === 'wrong' ? 'shake border-bad bg-bad-soft text-bad'
+                    : 'border-line bg-panel text-muted'
+                }`}
+              >
                 {feedback.text}
               </p>
             )}
 
             {!lock.hint && (
-              <button type="button" disabled={sending} onClick={hint} className="mt-3 w-full text-sm font-bold text-emerald-800 underline disabled:opacity-50">
+              <button type="button" disabled={sending} onClick={hint} className="mt-3 w-full text-sm font-bold text-info underline disabled:opacity-50">
                 💡 Get a hint (+{game.hint_penalty_seconds} s)
               </button>
             )}
 
             {lock.tried.length > 0 && (
-              <div className="mt-4 border-t-2 border-ink pt-3 text-left">
-                <p className="text-xs font-bold uppercase tracking-widest text-neutral-600">Your team already tried</p>
+              <div className="mt-4 border-t-2 border-line pt-3 text-left">
+                <p className="text-xs font-bold uppercase tracking-widest text-muted">Your team already tried</p>
                 <ul className="mt-1 space-y-1 text-sm">
                   {lock.tried.map((t, i) => (
                     <li key={i} className="flex justify-between gap-2">
-                      <span className={`font-bold ${t.close ? 'text-amber-800' : 'text-red-700'}`}>&ldquo;{t.answer}&rdquo;{t.close && ' (close)'}</span>
-                      <span className="text-neutral-600">{t.mine ? 'you' : t.by}</span>
+                      <span className={`font-bold ${t.close ? 'text-warn' : 'text-bad'}`}>&ldquo;{t.answer}&rdquo;{t.close && ' (close)'}</span>
+                      <span className="text-muted">{t.mine ? 'you' : t.by}</span>
                     </li>
                   ))}
                 </ul>
@@ -298,10 +312,11 @@ function Room({ saved, onLeave }) {
             )}
           </>
         ) : (
-          <p className="text-center text-neutral-700">Loading your lock…</p>
+          <p className="text-center text-muted">Loading your lock…</p>
         )}
 
-        {error && <p className="mt-3 text-center font-bold text-red-700">{error}</p>}
+        {error && <p className="mt-3 text-center font-bold text-bad">{error}</p>}
+        </div>
       </div>
     </main>
   )

@@ -21,8 +21,9 @@ function App() {
 
   if (!isConfigured) return <NotConfigured />
   if (path === '/join') return <StudentJoin />
-  if (path === '/submit') return <SubmitQuestions />
-  if (path === '/review') return <ReviewDashboard />
+  // The question pages are long forms, so they keep a light, paper look (see index.css)
+  if (path === '/submit') return <div className="theme-paper"><SubmitQuestions /></div>
+  if (path === '/review') return <div className="theme-paper"><ReviewDashboard /></div>
   return <LeaderApp />
 }
 
@@ -75,14 +76,14 @@ function LeaderApp() {
   }
 
   if (screen === 'restoring') {
-    return <CenterCard title={SITE_NAME}><p className="mt-4 text-neutral-700">Restoring your game…</p></CenterCard>
+    return <CenterCard title={SITE_NAME}><p className="mt-4 text-muted">Restoring your game…</p></CenterCard>
   }
 
   if (screen === 'landing') {
     return (
       <CenterCard title={SITE_NAME}>
-        <p className="mt-4 text-neutral-700">Create a game in the leader lobby to get started.</p>
-        <Button className="mt-6" onClick={() => setScreen('lobby')}>Open Leader Lobby</Button>
+        <p className="mt-4 text-muted">Teams race to crack a chain of locks. One wrong answer at a time.</p>
+        <Button className="mt-6" onClick={() => setScreen('lobby')}>🔓 Open Leader Lobby</Button>
       </CenterCard>
     )
   }
@@ -110,7 +111,7 @@ function LeaderApp() {
 function NotConfigured() {
   return (
     <CenterCard title="Setup needed">
-      <p className="mt-4 text-neutral-700">
+      <p className="mt-4 text-muted">
         Add your Supabase address and public key to <code>.env.local</code> (see <code>.env.example</code>), then restart.
       </p>
     </CenterCard>

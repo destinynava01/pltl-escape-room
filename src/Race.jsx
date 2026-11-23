@@ -4,7 +4,7 @@ import { SITE_NAME } from './config'
 import EndGameReview from './EndGameReview'
 import { downloadResults } from './gameResults'
 import { clock } from './time'
-import { Button, Label, Page } from './ui'
+import { Button, HazardTape, Label, Page } from './ui'
 
 
 // The projector during a game: every team's locks, the clock, and (for the leader) close calls to accept.
@@ -93,23 +93,27 @@ export default function Race({ session, onLobby, onNewGame }) {
 
   return (
     <Page>
-      <header className="mx-auto mb-4 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4">
+      <HazardTape className="-mx-4 -mt-4 mb-4 h-3 sm:-mx-6 sm:-mt-6" />
+      <header className="mx-auto mb-5 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="inline-block border-4 border-ink bg-accent px-5 py-1 text-2xl font-black uppercase tracking-widest text-white shadow-md sm:text-4xl">
+          <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">
+            {finished ? '■ Lockdown lifted' : running ? '● Escape in progress' : 'Standing by'}
+          </p>
+          <h1 className="mt-1 font-display text-3xl font-black uppercase tracking-widest text-accent glow-accent sm:text-5xl">
             {SITE_NAME}
           </h1>
-          <p className="mt-2 text-sm font-bold text-neutral-700">
-            Late? Join at <span className="font-mono">{window.location.host}/join</span> with code{' '}
-            <span className="text-lg font-black tracking-widest text-accent">{joinCode}</span>
+          <p className="mt-2 text-sm font-bold text-muted">
+            Late? Join at <span className="font-mono text-ink">{window.location.host}/join</span> with code{' '}
+            <span className="font-mono text-xl font-black tracking-widest text-accent">{joinCode}</span>
           </p>
         </div>
-        <div className="rounded-xl border-4 border-ink bg-card px-6 py-2 text-center">
+        <div className={`rounded-xl border-2 border-bad bg-black/60 px-6 py-2 text-center ${running ? 'alarm' : ''}`}>
           <Label>{finished ? 'Final time' : 'Time'}</Label>
-          <p className="font-mono text-5xl font-black tabular-nums">{clock(elapsed)}</p>
+          <p className="font-mono text-6xl font-black tabular-nums text-bad glow-bad">{clock(elapsed)}</p>
         </div>
       </header>
 
-      {error && <p className="mx-auto mb-3 max-w-6xl rounded-lg bg-white p-2 font-bold text-red-700">{error}</p>}
+      {error && <p className="mx-auto mb-3 max-w-6xl rounded-lg bg-panel p-2 font-bold text-bad">{error}</p>}
       {!race && !error && <p className="mx-auto max-w-6xl">Loading the race…</p>}
 
       {race && (
@@ -119,21 +123,27 @@ export default function Race({ session, onLobby, onNewGame }) {
             {standings.map((row) => (
               <div
                 key={row.team_index}
-                className={`rounded-xl border-4 p-4 shadow-md ${row.escaped ? 'border-green-700 bg-green-50' : 'border-ink bg-card'}`}
+                className={`relative overflow-hidden rounded-xl border-2 p-4 pl-6 shadow-lg ${row.escaped ? 'border-ok bg-ok-soft box-glow-ok' : 'border-line bg-card'}`}
               >
+                <span aria-hidden="true" className="absolute inset-y-0 left-0 w-2" style={{ background: row.color }} />
+                {row.escaped && (
+                  <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 -rotate-12 rounded border-4 border-ok px-3 font-display text-3xl font-black uppercase tracking-widest text-ok opacity-25 sm:text-5xl">
+                    Escaped
+                  </span>
+                )}
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="flex items-center gap-3 text-2xl font-black">
-                    <span className="w-8 text-center text-accent">{row.place}.</span>
-                    <span aria-hidden="true" className="h-5 w-5 rounded-full border-2 border-ink" style={{ background: row.color }} />
+                    <span className="w-10 text-center font-display text-accent">#{row.place}</span>
+                    <span aria-hidden="true" className="h-5 w-5 rounded-full border-2 border-line" style={{ background: row.color }} />
                     {row.name}
-                    <span className="text-sm font-bold text-neutral-600">({row.members} student{row.members === 1 ? '' : 's'})</span>
+                    <span className="text-sm font-bold text-muted">({row.members} student{row.members === 1 ? '' : 's'})</span>
                   </p>
                   <p className="text-right">
-                    <span className={`font-mono text-2xl font-black tabular-nums ${row.escaped ? 'text-green-700' : ''}`}>
-                      {row.escaped ? `🎉 Escaped · ${clock(timeOf(row))}` : clock(timeOf(row))}
+                    <span className={`font-mono text-3xl font-black tabular-nums ${row.escaped ? 'text-ok glow-ok' : 'text-ink'}`}>
+                      {row.escaped ? `🎉 ${clock(timeOf(row))}` : clock(timeOf(row))}
                     </span>
                     {row.hints > 0 && (
-                      <span className="block text-xs font-bold text-neutral-700">
+                      <span className="block text-xs font-bold text-muted">
                         💡 {row.hints} hint{row.hints === 1 ? '' : 's'} (+{clock(row.penalty_seconds)})
                       </span>
                     )}
@@ -147,18 +157,19 @@ export default function Race({ session, onLobby, onNewGame }) {
                     return (
                       <span
                         key={k}
-                        className={`flex h-12 w-12 items-center justify-center rounded-lg border-2 text-2xl ${
-                          open ? 'border-green-700 bg-green-100'
-                            : current ? 'animate-pulse border-accent bg-amber-100'
-                            : 'border-neutral-400 bg-white opacity-60'
+                        className={`relative flex h-14 w-14 items-center justify-center rounded-lg border-2 text-2xl ${
+                          open ? 'unlock-pop border-ok bg-ok-soft box-glow-ok'
+                            : current ? 'animate-pulse border-accent bg-warn-soft box-glow-accent'
+                            : 'border-line bg-panel opacity-50 grayscale'
                         }`}
                         title={`Lock ${k + 1}${open ? ': open' : current ? ': working on it' : ''}${row.hinted_locks.includes(k) ? ' (hint used)' : ''}`}
                       >
                         {open ? '🔓' : '🔒'}
+                        <span className="absolute bottom-0.5 right-1 font-mono text-[10px] font-bold text-muted">{k + 1}</span>
                       </span>
                     )
                   })}
-                  <span className="self-center text-sm font-bold text-neutral-700">{row.locks_open} / {game.lock_count}</span>
+                  <span className="self-center font-display text-lg font-black text-muted">{row.locks_open}/{game.lock_count}</span>
                 </div>
               </div>
             ))}
@@ -166,24 +177,24 @@ export default function Race({ session, onLobby, onNewGame }) {
 
           {/* Leader tools */}
           <aside className="space-y-3">
-            <div className="rounded-xl border-2 border-ink bg-card p-4">
-              <p className="font-black text-accent">Close calls</p>
-              <p className="text-xs text-neutral-700">
+            <div className="rounded-xl border-2 border-warn bg-card p-4">
+              <p className="font-display font-black uppercase tracking-widest text-warn">⚠ Close calls</p>
+              <p className="text-xs text-muted">
                 Wrong answers that are almost right. Accept one to open that team&apos;s lock.
               </p>
-              {race.close_calls.length === 0 && <p className="mt-2 text-sm text-neutral-600">None right now.</p>}
+              {race.close_calls.length === 0 && <p className="mt-2 text-sm text-muted">None right now.</p>}
               <ul className="mt-2 space-y-2">
                 {race.close_calls.map((c) => (
-                  <li key={c.id} className="rounded-lg border-2 border-ink bg-white p-2 text-sm">
-                    <p className="text-xs font-bold text-neutral-700">{teamName(c.team_index)} · lock {c.lock_no + 1} · {c.student}</p>
+                  <li key={c.id} className="rounded-lg border-2 border-line bg-panel p-2 text-sm">
+                    <p className="text-xs font-bold text-muted">{teamName(c.team_index)} · lock {c.lock_no + 1} · {c.student}</p>
                     <p className="font-bold">&ldquo;{c.answer}&rdquo;</p>
                     {shownKeys.includes(c.id) ? (
-                      <p className="text-xs text-green-800">
+                      <p className="text-xs text-ok">
                         Key: <span className="font-bold">{c.answer_key}</span>
                         {c.also.length > 0 && ` (also: ${c.also.join(', ')})`}
                       </p>
                     ) : (
-                      <button type="button" className="text-xs font-bold text-emerald-800 underline" onClick={() => setShownKeys((k) => [...k, c.id])}>
+                      <button type="button" className="text-xs font-bold text-info underline" onClick={() => setShownKeys((k) => [...k, c.id])}>
                         👁 Show the answer key (the room can see it)
                       </button>
                     )}
@@ -192,7 +203,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                         type="button"
                         disabled={busy || !running}
                         onClick={() => act({ action: 'accept_attempt', attempt_id: c.id })}
-                        className="rounded-md border-2 border-ink bg-green-600 px-3 py-1 text-xs font-bold text-white hover:bg-green-500 disabled:opacity-40"
+                        className="rounded-md border-2 border-line bg-ok px-3 py-1 text-xs font-bold text-on-accent hover:brightness-110 disabled:opacity-40"
                       >
                         ✓ Accept
                       </button>
@@ -223,26 +234,29 @@ export default function Race({ session, onLobby, onNewGame }) {
       {/* Game over: winner, standings, question review, results download (same as the other sites) */}
       {finished && !reviewing && (
         <div className="fixed inset-0 z-30 flex items-center justify-center overflow-y-auto bg-black/80 p-4">
-          <section className="my-auto w-full max-w-lg rounded-2xl border-4 border-ink bg-card p-8 text-center text-ink shadow-2xl">
-            <div className="text-6xl">🏆</div>
-            <h2 className="mt-4 text-4xl font-black text-accent">
+          <section className="my-auto w-full max-w-lg overflow-hidden rounded-2xl border-2 border-accent bg-card text-center text-ink shadow-2xl box-glow-accent">
+            <HazardTape className="h-3" />
+            <div className="p-8">
+            <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">■ Lockdown lifted</p>
+            <div className="mt-2 text-6xl">🏆</div>
+            <h2 className="mt-4 font-display text-3xl font-black uppercase tracking-wide text-accent glow-accent">
               {winners.length === 1 ? `${winners[0].name} wins!` : `Tie: ${winners.map((w) => w.name).join(' & ')}`}
             </h2>
-            <p className="mt-1 font-bold text-neutral-700">
+            <p className="mt-1 font-bold text-muted">
               {standings.filter((s) => s.escaped).length} of {standings.length} teams escaped
             </p>
 
             <div className="mt-6 space-y-2">
               {standings.map((row) => (
-                <p key={row.team_index} className="flex items-center justify-between gap-3 rounded-lg border-2 border-ink bg-white px-4 py-2 font-bold">
+                <p key={row.team_index} className="flex items-center justify-between gap-3 rounded-lg border-2 border-line bg-panel px-4 py-2 font-bold">
                   <span className="flex items-center gap-2">
                     <span className="w-6 text-accent">{row.place}.</span>
-                    <span aria-hidden="true" className="inline-block h-4 w-4 rounded-full border border-ink" style={{ background: row.color }} />
+                    <span aria-hidden="true" className="inline-block h-4 w-4 rounded-full border border-line" style={{ background: row.color }} />
                     {row.name}
                   </span>
                   <span className="text-right">
                     {row.escaped ? `🎉 ${clock(row.total_seconds)}` : `${row.locks_open}/${game.lock_count} locks`}
-                    {row.hints > 0 && <span className="block text-xs text-neutral-600">💡 {row.hints} (+{clock(row.penalty_seconds)})</span>}
+                    {row.hints > 0 && <span className="block text-xs text-muted">💡 {row.hints} (+{clock(row.penalty_seconds)})</span>}
                   </span>
                 </p>
               ))}
@@ -254,13 +268,14 @@ export default function Race({ session, onLobby, onNewGame }) {
                 {downloading ? 'Preparing...' : '⬇️ Download results (.xlsx)'}
               </Button>
             </div>
-            <p className="mt-2 text-xs text-neutral-700">
+            <p className="mt-2 text-xs text-muted">
               Do these before starting a new game. New game closes this one, and game data is cleared after 8 hours.
             </p>
-            {error && <p className="mt-2 text-sm font-bold text-red-700">{error}</p>}
+            {error && <p className="mt-2 text-sm font-bold text-bad">{error}</p>}
 
             <Button className="mt-6 w-full" onClick={onNewGame}>New game</Button>
-            <p className="mt-2 text-sm text-neutral-700">Clears this game and sends students&apos; phones back to the join page.</p>
+            <p className="mt-2 text-sm text-muted">Clears this game and sends students&apos; phones back to the join page.</p>
+            </div>
           </section>
         </div>
       )}
