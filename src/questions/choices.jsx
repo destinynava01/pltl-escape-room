@@ -11,7 +11,7 @@ export function ChoiceContent({ choice, imageClassName = 'max-h-32' }) {
       <img
         src={imageUrl(path)}
         alt={text || 'Answer choice picture'}
-        className={`w-auto max-w-full rounded-md bg-white object-contain ${imageClassName}`}
+        className={`w-auto max-w-full rounded-md bg-panel object-contain ${imageClassName}`}
       />
       {text && <span>{text}</span>}
     </span>
@@ -21,19 +21,19 @@ export function ChoiceContent({ choice, imageClassName = 'max-h-32' }) {
 // The answer key for an open-response question: the answer plus up to 5 alternatives.
 // Students' typed answers are checked against all of them.
 export function OpenAnswerField({ value, onChange, alternatives = [], onAlternativesChange, inputClassName = '' }) {
-  const boxClass = `w-full rounded-lg border-2 bg-white px-3 py-2 text-ink placeholder-neutral-400 ${inputClassName}`
+  const boxClass = `w-full rounded-lg border-2 bg-panel px-3 py-2 text-ink placeholder-muted ${inputClassName}`
 
   return (
     <div className="space-y-2">
       <label className="block space-y-1">
-        <span className="text-sm text-neutral-800">Correct answer</span>
+        <span className="text-sm text-muted">Correct answer</span>
         <input
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="e.g. simple squamous (epithelium)"
           maxLength={150}
           required
-          className={`${boxClass} border-green-600`}
+          className={`${boxClass} border-ok`}
         />
       </label>
 
@@ -47,12 +47,12 @@ export function OpenAnswerField({ value, onChange, alternatives = [], onAlternat
             placeholder="Another answer that also counts"
             maxLength={150}
             aria-label={`Also accept, answer ${index + 2}`}
-            className={`${boxClass} border-green-600`}
+            className={`${boxClass} border-ok`}
           />
           <button
             type="button"
             onClick={() => onAlternativesChange(alternatives.filter((_, i) => i !== index))}
-            className="shrink-0 text-xs font-bold text-red-700 hover:text-red-500"
+            className="shrink-0 text-xs font-bold text-bad hover:brightness-125"
           >
             Remove
           </button>
@@ -63,13 +63,13 @@ export function OpenAnswerField({ value, onChange, alternatives = [], onAlternat
         <button
           type="button"
           onClick={() => onAlternativesChange([...alternatives, ''])}
-          className="text-xs font-bold text-emerald-800 hover:text-emerald-600"
+          className="text-xs font-bold text-info hover:brightness-125"
         >
           + Also accept another answer
         </button>
       )}
 
-      <p className="text-xs text-neutral-600">
+      <p className="text-xs text-muted">
         Students type their answer to open the lock; it&apos;s checked against these. Put
         optional words in parentheses: &ldquo;simple squamous (epithelium)&rdquo; also accepts &ldquo;simple
         squamous&rdquo;. Use &ldquo;Also accept&rdquo; for different wording, like ATP / adenosine triphosphate.

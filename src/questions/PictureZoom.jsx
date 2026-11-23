@@ -79,7 +79,7 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
   }
 
   const buttonClass =
-    'rounded-lg border border-neutral-500 bg-card px-3 py-1.5 text-sm font-bold text-ink hover:bg-amber-100'
+    'rounded-lg border border-line bg-card px-3 py-1.5 text-sm font-bold text-ink hover:bg-hover'
 
   return (
     <div className="fixed inset-0 z-[60] flex flex-col bg-black/95 text-white lg:flex-row" role="dialog" aria-modal="true" aria-label={title}>
@@ -97,7 +97,7 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
             src={imageUrl(path)}
             alt={title}
             draggable={false}
-            className="max-h-full max-w-full select-none rounded-md bg-white object-contain"
+            className="max-h-full max-w-full select-none rounded-md bg-panel object-contain"
             style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`, transformOrigin: 'center' }}
           />
         </div>
@@ -112,18 +112,18 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-3 top-3 rounded-lg bg-accent px-4 py-1.5 text-sm font-bold text-white hover:opacity-90"
+          className="absolute right-3 top-3 rounded-lg bg-accent px-4 py-1.5 text-sm font-bold text-on-accent hover:opacity-90"
         >
           Close ✕
         </button>
 
-        <p className="pointer-events-none absolute bottom-2 left-0 right-0 text-center text-xs text-neutral-600">
+        <p className="pointer-events-none absolute bottom-2 left-0 right-0 text-center text-xs text-muted">
           Scroll, pinch or double-click to zoom · drag to move
         </p>
       </div>
 
       {panel && (
-        <aside className="max-h-[45vh] shrink-0 overflow-y-auto border-t border-neutral-400 bg-white p-4 text-ink lg:max-h-none lg:w-96 lg:border-l lg:border-t-0">
+        <aside className="max-h-[45vh] shrink-0 overflow-y-auto border-t border-line bg-panel p-4 text-ink lg:max-h-none lg:w-96 lg:border-l lg:border-t-0">
           {panel}
         </aside>
       )}

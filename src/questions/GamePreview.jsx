@@ -12,7 +12,7 @@ export default function GamePreviewButton({ question, lockNumber = 1, className 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`rounded-lg border border-emerald-700 px-3 py-1.5 text-xs font-bold text-emerald-800 hover:bg-amber-100 ${className}`}
+        className={`rounded-lg border border-info px-3 py-1.5 text-xs font-bold text-info hover:bg-hover ${className}`}
       >
         👁 Preview in game
       </button>
@@ -42,19 +42,19 @@ function PreviewDialog({ question, lockNumber, onClose }) {
           <p className="text-sm font-bold uppercase tracking-widest text-white">Student phone</p>
 
           <div className="flex items-center gap-3">
-            <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-white px-3 py-1.5 text-sm font-bold text-ink">
+            <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-panel px-3 py-1.5 text-sm font-bold text-ink">
               <input
                 type="checkbox"
                 checked={revealed}
                 onChange={(event) => setRevealed(event.target.checked)}
-                className="h-4 w-4 accent-green-600"
+                className="h-4 w-4 accent-emerald-400"
               />
               Show answer
             </label>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg bg-accent px-4 py-1.5 text-sm font-bold text-white hover:opacity-90"
+              className="rounded-lg bg-accent px-4 py-1.5 text-sm font-bold text-on-accent hover:opacity-90"
             >
               Close
             </button>
@@ -87,13 +87,13 @@ function PhoneView({ question, lockNumber, revealed, onZoom }) {
   const alternatives = alternativesOf(question)
 
   return (
-    <div className="mx-auto w-full max-w-sm rounded-[2rem] border-4 border-neutral-400 bg-white p-4 text-ink shadow-2xl">
+    <div className="mx-auto w-full max-w-sm rounded-[2rem] border-4 border-line bg-panel p-4 text-ink shadow-2xl">
       <div className="rounded-2xl bg-card p-5 shadow-xl">
-        <p className="text-center text-xs font-bold uppercase tracking-widest text-emerald-800">
+        <p className="text-center text-xs font-bold uppercase tracking-widest text-info">
           🔒 Lock {lockNumber}
         </p>
         <h1 className="mt-3 text-center text-xl font-bold">
-          {question.question_text || <span className="italic text-neutral-600">(no question text yet)</span>}
+          {question.question_text || <span className="italic text-muted">(no question text yet)</span>}
         </h1>
 
         <ZoomablePicture path={question.image_path} className="mt-3 max-h-56" onZoom={onZoom} />
@@ -103,22 +103,22 @@ function PhoneView({ question, lockNumber, revealed, onZoom }) {
             disabled
             placeholder="Type your answer"
             aria-label="Answer (disabled in the preview)"
-            className="w-full rounded-lg border-2 border-neutral-500 bg-white px-3 py-3 text-ink placeholder-neutral-400"
+            className="w-full rounded-lg border-2 border-line bg-panel px-3 py-3 text-ink placeholder-muted"
           />
-          <div className="rounded-lg bg-accent px-4 py-3 text-center font-bold text-white opacity-60">Unlock</div>
+          <div className="rounded-lg bg-accent px-4 py-3 text-center font-bold text-on-accent opacity-60">Unlock</div>
         </div>
 
         {revealed ? (
-          <div className="mt-4 rounded-lg border-2 border-green-600 bg-green-50 p-3 text-center">
-            <p className="text-xs font-bold uppercase tracking-wider text-green-700">Answer</p>
+          <div className="mt-4 rounded-lg border-2 border-ok bg-ok-soft p-3 text-center">
+            <p className="text-xs font-bold uppercase tracking-wider text-ok">Answer</p>
             <p className="mt-1 font-bold text-ink">{question.answer_text?.trim() || '(no answer yet)'}</p>
             {alternatives.length > 0 && (
-              <p className="mt-1 text-sm text-neutral-800">Also accepted: {alternatives.join(', ')}</p>
+              <p className="mt-1 text-sm text-muted">Also accepted: {alternatives.join(', ')}</p>
             )}
-            <p className="mt-2 text-xs text-neutral-600">Words in parentheses are optional.</p>
+            <p className="mt-2 text-xs text-muted">Words in parentheses are optional.</p>
           </div>
         ) : (
-          <p className="mt-3 text-center text-sm text-neutral-800">Type the answer to open this lock.</p>
+          <p className="mt-3 text-center text-sm text-muted">Type the answer to open this lock.</p>
         )}
       </div>
     </div>
@@ -132,7 +132,7 @@ function ZoomablePicture({ path, className, onZoom }) {
   return (
     <button type="button" onClick={onZoom} className={`group relative mx-auto block ${className.split(' ').filter((c) => c.startsWith('mt-')).join(' ')}`} aria-label="Zoom in on the picture">
       <QuestionImage path={path} className={className.split(' ').filter((c) => !c.startsWith('mt-')).join(' ')} />
-      <span className="absolute bottom-2 right-2 rounded-md bg-white px-2 py-1 text-xs font-bold text-accent group-hover:bg-amber-100">
+      <span className="absolute bottom-2 right-2 rounded-md bg-panel px-2 py-1 text-xs font-bold text-accent group-hover:bg-warn-soft">
         🔍 Tap to zoom
       </span>
     </button>
@@ -143,9 +143,9 @@ function ZoomablePicture({ path, className, onZoom }) {
 function ZoomPanel({ question, lockNumber, onBack }) {
   return (
     <div className="text-center text-ink">
-      <p className="text-xs font-bold uppercase tracking-widest text-emerald-800">🔒 Lock {lockNumber}</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-info">🔒 Lock {lockNumber}</p>
       <p className="mt-1 text-sm font-bold">{question.question_text}</p>
-      <button type="button" onClick={onBack} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-white">
+      <button type="button" onClick={onBack} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
         Back to the lock
       </button>
     </div>

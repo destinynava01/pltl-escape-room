@@ -14,7 +14,7 @@ const GAMES = [
 ]
 
 const inputClass =
-  'w-full rounded-lg border border-neutral-500 bg-white px-3 py-2 text-sm text-ink placeholder-neutral-400'
+  'w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink placeholder-muted'
 
 const review = (payload, fallback = 'Something went wrong.') => callFunction('review', payload, fallback)
 
@@ -81,9 +81,9 @@ export default function SubjectManager({ isCreator }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={addSubject} className="space-y-3 rounded-xl border border-neutral-400 bg-card p-5">
+      <form onSubmit={addSubject} className="space-y-3 rounded-xl border border-line bg-card p-5">
         <h2 className="font-bold text-accent">Add a subject</h2>
-        <p className="text-sm text-neutral-800">
+        <p className="text-sm text-muted">
           For example Chemistry. It starts out for Escape Room only. Then add its courses below; they show up in the
           submission form, the review tools, and the game lobby.
         </p>
@@ -96,20 +96,20 @@ export default function SubjectManager({ isCreator }) {
             required
             className={`${inputClass} min-w-56 flex-1`}
           />
-          <button type="submit" className="rounded-lg bg-accent px-5 py-2 font-bold text-white hover:opacity-90">
+          <button type="submit" className="rounded-lg bg-accent px-5 py-2 font-bold text-on-accent hover:opacity-90">
             Add subject
           </button>
         </div>
       </form>
 
-      {message && <p className="text-sm text-green-700">{message}</p>}
-      {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+      {message && <p className="text-sm text-ok">{message}</p>}
+      {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
 
       {!subjects ? (
-        <p className="text-center text-neutral-800">Loading subjects...</p>
+        <p className="text-center text-muted">Loading subjects...</p>
       ) : (
         subjects.map((subject) => (
-          <section key={subject.subject_name} className="rounded-xl border border-neutral-400 bg-card p-5">
+          <section key={subject.subject_name} className="rounded-xl border border-line bg-card p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-lg font-bold text-accent">{subject.subject_name}</h2>
               {subject.courses.length === 0 && (
@@ -119,7 +119,7 @@ export default function SubjectManager({ isCreator }) {
                       run({ action: 'remove_subject', subject_name: subject.subject_name })
                     }
                   }}
-                  className="text-xs font-bold text-red-700 hover:text-red-500"
+                  className="text-xs font-bold text-bad hover:brightness-125"
                 >
                   Remove subject
                 </button>
@@ -128,7 +128,7 @@ export default function SubjectManager({ isCreator }) {
 
             {isCreator && subject.games && (
               <div className="mt-2 flex flex-wrap items-center gap-4 text-sm">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">Share with</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-info">Share with</span>
                 {GAMES.map((game) => (
                   <label key={game.id} className="flex items-center gap-1">
                     <input
@@ -172,15 +172,15 @@ export default function SubjectManager({ isCreator }) {
             )}
 
             <ul className="mt-3 space-y-2">
-              {subject.courses.length === 0 && <li className="text-sm text-neutral-600">No courses yet.</li>}
+              {subject.courses.length === 0 && <li className="text-sm text-muted">No courses yet.</li>}
               {subject.courses.map((course) => (
                 <li
                   key={course.course_name}
-                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-sm"
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-panel px-3 py-2 text-sm"
                 >
                   <span>
                     <span className="font-bold">{course.course_name}</span>
-                    <span className="ml-2 text-xs text-emerald-800">
+                    <span className="ml-2 text-xs text-info">
                       {course.set_count === 0
                         ? 'No questions yet'
                         : `${course.set_count} question set${course.set_count === 1 ? '' : 's'}`}
@@ -193,7 +193,7 @@ export default function SubjectManager({ isCreator }) {
                           run({ action: 'remove_course', course_name: course.course_name })
                         }
                       }}
-                      className="text-xs font-bold text-red-700 hover:text-red-500"
+                      className="text-xs font-bold text-bad hover:brightness-125"
                     >
                       Remove
                     </button>
@@ -214,7 +214,7 @@ export default function SubjectManager({ isCreator }) {
               />
               <button
                 type="submit"
-                className="rounded-lg border border-accent px-4 py-2 font-bold text-accent hover:bg-amber-100"
+                className="rounded-lg border border-accent px-4 py-2 font-bold text-accent hover:bg-hover"
               >
                 Add course
               </button>

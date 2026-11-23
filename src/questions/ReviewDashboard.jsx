@@ -17,7 +17,7 @@ const UTRGV_EMAIL = /^[^@\s]+@utrgv\.edu$/i
 const LOCKS_PER_GAME = 6
 
 const inputClass =
-  'w-full rounded-lg border border-neutral-500 bg-white px-3 py-2 text-sm text-ink placeholder-neutral-400'
+  'w-full rounded-lg border border-line bg-panel px-3 py-2 text-sm text-ink placeholder-muted'
 
 const same = (a, b) => a.trim().toLowerCase() === b.trim().toLowerCase()
 
@@ -80,15 +80,15 @@ export default function ReviewDashboard() {
 
 function Shell({ children, wide = false }) {
   return (
-    <main className="min-h-dvh bg-board px-4 py-8 text-ink">
+    <main className="vault-bg min-h-dvh px-4 pb-8 text-ink">
+      <HazardTape className="-mx-4 mb-6 h-2" />
       <div className={`mx-auto ${wide ? 'max-w-5xl' : 'max-w-md'}`}>
         <BackToGame />
 
         <header className="mb-6 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-800">
-            PLTL Escape Room
-          </p>
-          <h1 className="mt-2 text-3xl font-black text-accent">Question Review</h1>
+          <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">● Restricted area</p>
+          <h1 className="mt-2 font-display text-3xl font-black uppercase tracking-widest text-accent glow-accent">Question Review</h1>
+          <p className="mt-1 font-display text-[11px] font-bold uppercase tracking-[0.3em] text-muted">PLTL Escape Room</p>
         </header>
         {children}
       </div>
@@ -270,8 +270,8 @@ function ReviewerArea({ session }) {
         <div className="rounded-2xl bg-card p-6 text-center shadow-xl">
           <div className="text-4xl">🔒</div>
           <p className="mt-3 text-ink">{accessError}</p>
-          <p className="mt-2 text-sm text-neutral-600">Signed in as {session.user.email}</p>
-          <button onClick={signOut} className="mt-5 font-bold text-emerald-800 hover:text-emerald-600">
+          <p className="mt-2 text-sm text-muted">Signed in as {session.user.email}</p>
+          <button onClick={signOut} className="mt-5 font-bold text-info hover:brightness-125">
             Sign out
           </button>
         </div>
@@ -280,7 +280,7 @@ function ReviewerArea({ session }) {
   }
 
   if (!me) {
-    return <Shell><p className="text-center text-neutral-800">Checking access...</p></Shell>
+    return <Shell><p className="text-center text-muted">Checking access...</p></Shell>
   }
 
   return (
@@ -295,9 +295,9 @@ function ReviewerArea({ session }) {
           )}
         </div>
 
-        <p className="text-sm text-neutral-800">
+        <p className="text-sm text-muted">
           {me.email} · {me.is_creator ? 'Creator' : me.role === 'supervisor' ? 'Supervisor' : 'Co-mentor'} ·{' '}
-          <button onClick={signOut} className="font-bold text-emerald-800 hover:text-emerald-600">Sign out</button>
+          <button onClick={signOut} className="font-bold text-info hover:brightness-125">Sign out</button>
         </p>
       </div>
 
@@ -313,8 +313,8 @@ function TabButton({ active, onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className={`rounded-lg px-4 py-2 font-bold transition ${
-        active ? 'bg-accent text-white' : 'border border-neutral-500 text-ink hover:bg-amber-100'
+      className={`rounded-lg px-4 py-2 font-display text-sm font-bold uppercase tracking-wider transition ${
+        active ? 'bg-accent text-on-accent box-glow-accent' : 'border border-line bg-card text-ink hover:bg-hover'
       }`}
     >
       {children}
@@ -342,8 +342,8 @@ function ReviewQueue() {
     load()
   }, [])
 
-  if (errorMessage) return <p className="text-center text-red-700">{errorMessage}</p>
-  if (!questions) return <p className="text-center text-neutral-800">Loading the queue...</p>
+  if (errorMessage) return <p className="text-center text-bad">{errorMessage}</p>
+  if (!questions) return <p className="text-center text-muted">Loading the queue...</p>
 
   // Chapter (course > professor > chapter), then each leader's submission
   const groups = []
@@ -380,38 +380,38 @@ function ReviewQueue() {
       <ChapterProgress />
 
       {groups.length === 0 ? (
-        <div className="rounded-xl border border-neutral-400 bg-card p-8 text-center">
+        <div className="rounded-xl border border-line bg-card p-8 text-center">
           <div className="text-4xl">✅</div>
           <p className="mt-2 text-ink">No questions waiting for review.</p>
         </div>
       ) : (
         <div className="space-y-3">
-          <p className="text-xs text-neutral-600">
+          <p className="text-xs text-muted">
             {questions.length} questions waiting in {groups.length} chapter{groups.length === 1 ? '' : 's'}. Open a
             chapter, then a leader&apos;s submission, to review it.
           </p>
 
           {groups.map((group) => (
-            <details key={group.key} className="group/chapter rounded-xl border border-neutral-400 bg-card">
+            <details key={group.key} className="group/chapter rounded-xl border border-line bg-card">
               <summary className="flex cursor-pointer select-none flex-wrap items-baseline justify-between gap-2 px-5 py-3">
                 <span className="font-bold text-accent">
                   <span className="mr-1 inline-block transition group-open/chapter:rotate-90">▸</span>
                   {group.label.join(' › ')}
                 </span>
-                <span className="text-xs text-neutral-800">
+                <span className="text-xs text-muted">
                   {group.count} pending · from {group.leaders.join(', ')}
                 </span>
               </summary>
 
               <div className="space-y-3 px-4 pb-4">
                 {group.submissions.map((submission) => (
-                  <details key={submission.key} className="group/sub rounded-lg border border-neutral-400 bg-white">
+                  <details key={submission.key} className="group/sub rounded-lg border border-line bg-panel">
                     <summary className="flex cursor-pointer select-none flex-wrap items-baseline justify-between gap-2 px-4 py-2 text-sm">
                       <span>
                         <span className="mr-1 inline-block transition group-open/sub:rotate-90">▸</span>
                         Pending review from: <span className="font-bold text-ink">{submission.leader}</span>
                       </span>
-                      <span className="text-xs text-neutral-600">
+                      <span className="text-xs text-muted">
                         {submission.questions.length} question{submission.questions.length === 1 ? '' : 's'}
                         {submission.submittedAt && ` · ${new Date(submission.submittedAt).toLocaleDateString()}`}
                       </span>
@@ -511,7 +511,7 @@ function ChapterProgress() {
       onToggle={(event) => {
         if (event.currentTarget.open) load()
       }}
-      className="rounded-xl border border-neutral-400 bg-card"
+      className="rounded-xl border border-line bg-card"
     >
       <summary className="cursor-pointer select-none px-5 py-3 font-bold text-accent">
         Questions per chapter
@@ -519,8 +519,8 @@ function ChapterProgress() {
       </summary>
 
       <div className="space-y-4 px-5 pb-5">
-        {loading && !questions && <p className="text-sm text-neutral-800">Loading...</p>}
-        {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+        {loading && !questions && <p className="text-sm text-muted">Loading...</p>}
+        {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
 
         {questions && (
           <>
@@ -547,18 +547,18 @@ function ChapterProgress() {
               />
             </div>
 
-            <p className="text-xs text-neutral-600">
+            <p className="text-xs text-muted">
               Showing {shown.length} of {chapters.length} chapters with approved questions. Each lock in a game asks one
               question from the chapter, so a chapter needs at least {LOCKS_PER_GAME} for a default {LOCKS_PER_GAME}-lock game.
             </p>
 
             {groups.length === 0 && (
-              <p className="rounded-lg bg-white p-4 text-center text-sm text-neutral-800">No chapters match these filters.</p>
+              <p className="rounded-lg bg-panel p-4 text-center text-sm text-muted">No chapters match these filters.</p>
             )}
 
             {groups.map((group) => (
               <section key={group.key}>
-                <h3 className="text-sm font-bold uppercase tracking-wider text-emerald-800">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-info">
                   {group.course} › {group.professor}
                 </h3>
                 <div className="mt-2 grid gap-3 md:grid-cols-2">
@@ -695,7 +695,7 @@ function AddPicture({ onAdded }) {
   return (
     <div>
       <label
-        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-500 px-3 py-2 text-sm text-neutral-800 hover:bg-amber-100 ${
+        className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-line px-3 py-2 text-sm text-muted hover:bg-hover ${
           uploading ? 'pointer-events-none opacity-60' : ''
         }`}
       >
@@ -710,7 +710,7 @@ function AddPicture({ onAdded }) {
         />
         {uploading ? 'Uploading picture...' : '🖼️ Add a picture'}
       </label>
-      {errorMessage && <p className="mt-1 text-xs text-red-700">{errorMessage}</p>}
+      {errorMessage && <p className="mt-1 text-xs text-bad">{errorMessage}</p>}
     </div>
   )
 }
@@ -733,7 +733,7 @@ function ContentFields({ draft, set, originalImage }) {
           <button
             type="button"
             onClick={() => set({ image_path: null })}
-            className="block w-full text-center text-xs font-bold text-red-700 hover:text-red-500"
+            className="block w-full text-center text-xs font-bold text-bad hover:brightness-125"
           >
             Remove picture
           </button>
@@ -744,7 +744,7 @@ function ContentFields({ draft, set, originalImage }) {
         <button
           type="button"
           onClick={() => set({ image_path: originalImage })}
-          className="text-xs font-bold text-emerald-800 hover:text-emerald-600"
+          className="text-xs font-bold text-info hover:brightness-125"
         >
           Undo: put the picture back
         </button>
@@ -771,8 +771,8 @@ function QuestionEditor({ question, catalog, busy, onSave, onCancel }) {
   }
 
   return (
-    <form onSubmit={submit} className="mt-3 space-y-3 rounded-lg border border-emerald-700 bg-card p-3">
-      <p className="text-xs text-neutral-800">
+    <form onSubmit={submit} className="mt-3 space-y-3 rounded-lg border border-info bg-card p-3">
+      <p className="text-xs text-muted">
         Save changes to this {question.status === 'rejected' ? 'retired' : 'approved'} question, or save the edited
         version as a new approved question.
       </p>
@@ -782,7 +782,7 @@ function QuestionEditor({ question, catalog, busy, onSave, onCancel }) {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-lg bg-green-600 px-4 py-2 text-xs font-bold text-white hover:bg-green-500 disabled:opacity-50"
+          className="rounded-lg bg-ok px-4 py-2 text-xs font-bold text-on-accent hover:brightness-110 disabled:opacity-50"
         >
           {busy ? 'Saving...' : 'Save changes'}
         </button>
@@ -790,7 +790,7 @@ function QuestionEditor({ question, catalog, busy, onSave, onCancel }) {
           type="button"
           disabled={busy}
           onClick={() => onSave('copy_question', draft)}
-          className="rounded-lg bg-emerald-700 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-600 disabled:opacity-50"
+          className="rounded-lg bg-info px-4 py-2 text-xs font-bold text-on-accent hover:brightness-110 disabled:opacity-50"
         >
           Save as approved copy
         </button>
@@ -799,7 +799,7 @@ function QuestionEditor({ question, catalog, busy, onSave, onCancel }) {
           type="button"
           disabled={busy}
           onClick={onCancel}
-          className="rounded-lg border border-neutral-500 px-4 py-2 text-xs font-bold text-ink hover:bg-amber-100 disabled:opacity-50"
+          className="rounded-lg border border-line px-4 py-2 text-xs font-bold text-ink hover:bg-hover disabled:opacity-50"
         >
           Cancel
         </button>
@@ -875,15 +875,15 @@ function PendingQuestion({ question, catalog, onDone }) {
   }
 
   return (
-    <article className="space-y-3 rounded-xl border border-neutral-400 bg-card p-5">
+    <article className="space-y-3 rounded-xl border border-line bg-card p-5">
       <PlacementFields draft={draft} set={set} catalog={catalog} idPrefix={question.id} />
 
       {draft.course_name && draft.professor_name.trim() && draft.topic_name.trim() && (
-        <div className="rounded-lg bg-white p-2 text-xs text-neutral-800">
+        <div className="rounded-lg bg-panel p-2 text-xs text-muted">
           <button
             type="button"
             onClick={() => setShowChapter((open) => !open)}
-            className="font-bold text-emerald-800 hover:text-emerald-600"
+            className="font-bold text-info hover:brightness-125"
           >
             {showChapter ? 'Hide' : 'See'} this chapter&apos;s approved questions
           </button>
@@ -916,13 +916,13 @@ function PendingQuestion({ question, catalog, onDone }) {
         />
       ))}
 
-      <p className="text-xs text-neutral-600">
+      <p className="text-xs text-muted">
         Submitted by {question.submitter_name || 'anonymous'}
         {question.submitted_at && ` on ${new Date(question.submitted_at).toLocaleDateString()}`}
       </p>
       {question.submitter_note && (
-        <p className="rounded-md bg-white px-2 py-1 text-xs text-ink">
-          <span className="font-bold text-emerald-800">Leader&apos;s note:</span> {question.submitter_note}
+        <p className="rounded-md bg-panel px-2 py-1 text-xs text-ink">
+          <span className="font-bold text-info">Leader&apos;s note:</span> {question.submitter_note}
         </p>
       )}
 
@@ -938,20 +938,20 @@ function PendingQuestion({ question, catalog, onDone }) {
         <button
           onClick={() => decide('approve')}
           disabled={busy}
-          className="rounded-lg bg-green-600 px-5 py-2 font-bold text-white hover:bg-green-500 disabled:opacity-50"
+          className="rounded-lg bg-ok px-5 py-2 font-bold text-on-accent hover:brightness-110 disabled:opacity-50"
         >
           Approve
         </button>
         <button
           onClick={() => decide('reject')}
           disabled={busy}
-          className="rounded-lg border border-red-600 px-5 py-2 font-bold text-red-700 hover:bg-red-100 disabled:opacity-50"
+          className="rounded-lg border border-bad px-5 py-2 font-bold text-bad hover:bg-bad-soft disabled:opacity-50"
         >
           Reject
         </button>
       </div>
 
-      {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+      {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
     </article>
   )
 }
@@ -961,7 +961,7 @@ function DuplicateCompare({ edited, match, busy, onKeep }) {
   const isApproved = match.status === 'approved'
 
   return (
-    <div className="rounded-lg border border-accent bg-amber-100 p-3 text-sm">
+    <div className="rounded-lg border border-accent bg-warn-soft p-3 text-sm">
       <p className="font-bold text-accent">
         ⚠️ Possible duplicate ({Math.round(match.score * 100)}% similar). Which version is clearer?
       </p>
@@ -983,20 +983,20 @@ function DuplicateCompare({ edited, match, busy, onKeep }) {
         <button
           onClick={() => onKeep('new')}
           disabled={busy}
-          className="rounded-lg bg-emerald-700 px-4 py-2 font-bold text-white hover:bg-emerald-600 disabled:opacity-50"
+          className="rounded-lg bg-info px-4 py-2 font-bold text-on-accent hover:brightness-110 disabled:opacity-50"
         >
           {isApproved ? 'Use this wording instead' : 'Keep this one'}
         </button>
         <button
           onClick={() => onKeep('existing')}
           disabled={busy}
-          className="rounded-lg border border-emerald-700 px-4 py-2 font-bold text-emerald-800 hover:bg-amber-100 disabled:opacity-50"
+          className="rounded-lg border border-info px-4 py-2 font-bold text-info hover:bg-hover disabled:opacity-50"
         >
           {isApproved ? 'Keep the existing one' : 'Keep the other one'}
         </button>
       </div>
 
-      <p className="mt-2 text-xs text-neutral-800">
+      <p className="mt-2 text-xs text-muted">
         {isApproved
           ? 'Using this wording puts it in the existing question’s spot and retires the old one. Keeping the existing one rejects this submission as a duplicate.'
           : 'The one you don’t keep is rejected as a duplicate; the one you keep stays in the queue to approve.'}
@@ -1008,9 +1008,9 @@ function DuplicateCompare({ edited, match, busy, onKeep }) {
 
 function QuestionPreview({ title, subtitle, question }) {
   return (
-    <div className="rounded-lg bg-white p-3">
-      <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">{title}</p>
-      <p className="text-[11px] text-neutral-600">{subtitle}</p>
+    <div className="rounded-lg bg-panel p-3">
+      <p className="text-xs font-bold uppercase tracking-wider text-info">{title}</p>
+      <p className="text-[11px] text-muted">{subtitle}</p>
       <p className="mt-2 font-bold text-ink">{question.question_text}</p>
       {question.image_path && <QuestionImage path={question.image_path} className="mt-2 max-h-40" />}
       <AnswerKey question={question} className="mt-2" />
@@ -1021,10 +1021,10 @@ function QuestionPreview({ title, subtitle, question }) {
 // "Answer: … ✓ (also: …)"
 function AnswerKey({ question, className = '' }) {
   return (
-    <p className={`font-bold text-green-700 ${className}`}>
+    <p className={`font-bold text-ok ${className}`}>
       Answer: {question.answer_text} ✓
       {question.accepted_answers?.length > 0 && (
-        <span className="font-normal text-green-700"> (also: {question.accepted_answers.join(', ')})</span>
+        <span className="font-normal text-ok"> (also: {question.accepted_answers.join(', ')})</span>
       )}
     </p>
   )
@@ -1056,7 +1056,7 @@ function NamedField({ label, value, onChange, options, isNew }) {
                 setAdding(false)
                 onChange('')
               }}
-              className="text-emerald-800 hover:text-emerald-600"
+              className="text-info hover:brightness-125"
             >
               Choose an existing one
             </button>
@@ -1128,7 +1128,7 @@ function QuestionBank() {
 
   return (
     <div className="space-y-4">
-      <section className="grid gap-2 rounded-xl border border-neutral-400 bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
+      <section className="grid gap-2 rounded-xl border border-line bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
         <select value={filters.course_name} onChange={(e) => setLevel('course_name', e.target.value)} aria-label="Course" className={selectClass}>
           <option value="">All courses</option>
           <CourseOptions catalog={catalog} />
@@ -1224,13 +1224,13 @@ function BankResults({ filters, catalog = [], compact = false }) {
     }
   }
 
-  if (errorMessage && !questions) return <p className="text-sm text-red-700">{errorMessage}</p>
-  if (!questions) return <p className="text-sm text-neutral-800">Loading...</p>
+  if (errorMessage && !questions) return <p className="text-sm text-bad">{errorMessage}</p>
+  if (!questions) return <p className="text-sm text-muted">Loading...</p>
   if (questions.length === 0) {
     return (
       <div className="space-y-2">
-        {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
-        <p className="text-sm text-neutral-800">No questions match these filters.</p>
+        {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
+        <p className="text-sm text-muted">No questions match these filters.</p>
       </div>
     )
   }
@@ -1249,19 +1249,19 @@ function BankResults({ filters, catalog = [], compact = false }) {
 
   return (
     <div className="space-y-4">
-      {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+      {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
       {!compact && (
-        <p className="text-sm text-neutral-800">
+        <p className="text-sm text-muted">
           {questions.length} question{questions.length === 1 ? '' : 's'} in {slots.length} chapter{slots.length === 1 ? '' : 's'}.
           {filters.status === 'approved' && ' A game picks its locks at random from the chosen chapter, one question per lock.'}
         </p>
       )}
-      {message && <p className="text-sm text-green-700">{message}</p>}
+      {message && <p className="text-sm text-ok">{message}</p>}
 
       {slots.map(({ key, question: first, items }) => (
         <section key={key} className="space-y-2">
           {!compact && (
-            <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-info">
               {first.course_name} › {first.professor_name} › {first.topic_name} · {items.length} in bank
             </h3>
           )}
@@ -1270,20 +1270,20 @@ function BankResults({ filters, catalog = [], compact = false }) {
             {items.map((question) => (
               <article
                 key={question.id}
-                className={`rounded-lg border border-neutral-400 bg-white p-3 text-sm ${
+                className={`rounded-lg border border-line bg-panel p-3 text-sm ${
                   !compact && editingId === question.id ? 'md:col-span-2' : ''
                 }`}
               >
                 <p className="font-bold text-ink">{question.question_text}</p>
                 {question.image_path && <QuestionImage path={question.image_path} className="mt-2 max-h-40" />}
                 <AnswerKey question={question} className="mt-1" />
-                <p className="mt-2 text-[11px] text-neutral-600">
+                <p className="mt-2 text-[11px] text-muted">
                   By {question.submitter_name || 'starter set'}
                   {question.reviewed_by && ` · reviewed by ${question.reviewed_by}`}
                 </p>
                 {question.submitter_note && (
                   <p className="mt-1 text-[11px] text-ink">
-                    <span className="font-bold text-emerald-800">Leader&apos;s note:</span> {question.submitter_note}
+                    <span className="font-bold text-info">Leader&apos;s note:</span> {question.submitter_note}
                   </p>
                 )}
                 {question.review_note && (
@@ -1311,7 +1311,7 @@ function BankResults({ filters, catalog = [], compact = false }) {
                       <button
                         type="button"
                         onClick={() => setEditingId(question.id)}
-                        className="text-xs font-bold text-emerald-800 hover:text-emerald-600"
+                        className="text-xs font-bold text-info hover:brightness-125"
                       >
                         Edit / copy
                       </button>
@@ -1320,7 +1320,7 @@ function BankResults({ filters, catalog = [], compact = false }) {
                       <button
                         type="button"
                         onClick={() => change('retire_question', question)}
-                        className="text-xs font-bold text-red-700 hover:text-red-500"
+                        className="text-xs font-bold text-bad hover:brightness-125"
                       >
                         Retire
                       </button>
@@ -1329,10 +1329,10 @@ function BankResults({ filters, catalog = [], compact = false }) {
                 )}
                 {!compact && question.status === 'rejected' && (
                   <div className="mt-2 flex gap-4">
-                    <button onClick={() => change('restore_question', question)} className="text-xs font-bold text-green-700 hover:text-green-600">
+                    <button onClick={() => change('restore_question', question)} className="text-xs font-bold text-ok hover:brightness-125">
                       Restore to bank
                     </button>
-                    <button onClick={() => change('delete_question', question)} className="text-xs font-bold text-red-700 hover:text-red-500">
+                    <button onClick={() => change('delete_question', question)} className="text-xs font-bold text-bad hover:brightness-125">
                       🗑️ Delete permanently
                     </button>
                   </div>
@@ -1392,9 +1392,9 @@ function ReviewerManager({ myEmail }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={addReviewer} className="space-y-3 rounded-xl border border-neutral-400 bg-card p-5">
+      <form onSubmit={addReviewer} className="space-y-3 rounded-xl border border-line bg-card p-5">
         <h2 className="font-bold text-accent">Add a reviewer</h2>
-        <p className="text-sm text-neutral-800">
+        <p className="text-sm text-muted">
           They sign in at this page with that email. Update the list each semester as mentors change.
         </p>
         <div className="flex flex-wrap gap-2">
@@ -1417,26 +1417,26 @@ function ReviewerManager({ myEmail }) {
           </select>
           <button
             type="submit"
-            className="rounded-lg bg-accent px-5 py-2 font-bold text-white hover:opacity-90"
+            className="rounded-lg bg-accent px-5 py-2 font-bold text-on-accent hover:opacity-90"
           >
             Add
           </button>
         </div>
-        {message && <p className="text-sm text-green-700">{message}</p>}
-        {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+        {message && <p className="text-sm text-ok">{message}</p>}
+        {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
       </form>
 
-      <section className="rounded-xl border border-neutral-400 bg-card p-5">
+      <section className="rounded-xl border border-line bg-card p-5">
         <h2 className="font-bold text-accent">Current reviewers ({reviewers.length})</h2>
         <ul className="mt-3 space-y-2">
           {reviewers.map((reviewer) => (
             <li
               key={reviewer.email}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-white px-3 py-2 text-sm"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-panel px-3 py-2 text-sm"
             >
               <span>
                 <span className="font-bold">{reviewer.email}</span>
-                <span className="ml-2 text-xs uppercase text-emerald-800">
+                <span className="ml-2 text-xs uppercase text-info">
                   {reviewer.role === 'supervisor' ? 'Supervisor' : 'Co-mentor'}
                 </span>
               </span>
@@ -1447,7 +1447,7 @@ function ReviewerManager({ myEmail }) {
                       run({ action: 'remove_reviewer', email: reviewer.email })
                     }
                   }}
-                  className="text-xs font-bold text-red-700 hover:text-red-500"
+                  className="text-xs font-bold text-bad hover:brightness-125"
                 >
                   Remove
                 </button>
@@ -1476,12 +1476,12 @@ function FlaggedQuestions({ catalog }) {
       .catch((error) => setErrorMessage(error.message))
   }, [])
 
-  if (errorMessage) return <p className="text-sm text-red-700">{errorMessage}</p>
+  if (errorMessage) return <p className="text-sm text-bad">{errorMessage}</p>
   if (!flags || flags.length === 0) return null
 
   return (
-    <section className="space-y-3 rounded-xl border-2 border-red-600 bg-red-50 p-4">
-      <h2 className="font-black uppercase tracking-wider text-red-700">
+    <section className="space-y-3 rounded-xl border-2 border-bad bg-bad-soft p-4">
+      <h2 className="font-black uppercase tracking-wider text-bad">
         ⚠️ Approved question needs revision ({flags.length})
       </h2>
       {flags.map((flag) => <FlagCard key={flag.id} flag={flag} catalog={catalog} onDone={load} />)}
@@ -1513,14 +1513,14 @@ function FlagCard({ flag, catalog, onDone }) {
   const resolve = (note) => [{ action: 'resolve_flag', flag_id: flag.id, note }, 'Could not resolve that.']
 
   return (
-    <article className="space-y-3 rounded-lg border border-red-500 bg-card p-4">
+    <article className="space-y-3 rounded-lg border border-bad bg-card p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <span className="rounded-md bg-red-500 px-2 py-0.5 text-xs font-black uppercase text-white">{reason}</span>
-        <span className="text-xs text-neutral-600">
+        <span className="rounded-md bg-bad px-2 py-0.5 text-xs font-black uppercase text-on-accent">{reason}</span>
+        <span className="text-xs text-muted">
           Flagged by {flag.flagged_by || 'a leader'} · {new Date(flag.created_at).toLocaleDateString()}
         </span>
       </div>
-      <p className="rounded-md bg-white px-3 py-2 text-sm text-ink">
+      <p className="rounded-md bg-panel px-3 py-2 text-sm text-ink">
         <span className="font-bold text-accent">Leader&apos;s note:</span> {flag.note}
       </p>
 
@@ -1549,7 +1549,7 @@ function FlagCard({ flag, catalog, onDone }) {
             type="button"
             onClick={() => setEditing(true)}
             disabled={busy}
-            className="rounded-lg bg-emerald-700 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-600 disabled:opacity-50"
+            className="rounded-lg bg-info px-4 py-2 text-sm font-bold text-on-accent hover:brightness-110 disabled:opacity-50"
           >
             Edit question
           </button>
@@ -1557,7 +1557,7 @@ function FlagCard({ flag, catalog, onDone }) {
             type="button"
             onClick={() => run([resolve('No change needed.')])}
             disabled={busy}
-            className="rounded-lg border border-green-600 px-4 py-2 text-sm font-bold text-green-700 hover:bg-amber-100 disabled:opacity-50"
+            className="rounded-lg border border-ok px-4 py-2 text-sm font-bold text-ok hover:bg-hover disabled:opacity-50"
           >
             Mark resolved (no change)
           </button>
@@ -1573,7 +1573,7 @@ function FlagCard({ flag, catalog, onDone }) {
                 }
               }}
               disabled={busy}
-              className="rounded-lg border border-red-600 px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-100 disabled:opacity-50"
+              className="rounded-lg border border-bad px-4 py-2 text-sm font-bold text-bad hover:bg-bad-soft disabled:opacity-50"
             >
               Retire question
             </button>
@@ -1582,7 +1582,7 @@ function FlagCard({ flag, catalog, onDone }) {
         </div>
       )}
 
-      {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+      {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
     </article>
   )
 }

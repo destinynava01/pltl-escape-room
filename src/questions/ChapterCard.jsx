@@ -14,7 +14,7 @@ export default function ChapterCard({ chapter, highlight = false }) {
 
   return (
     <article
-      className={`rounded-lg border bg-white p-3 text-sm ${highlight ? 'border-accent' : 'border-neutral-400'}`}
+      className={`rounded-lg border bg-panel p-3 text-sm ${highlight ? 'border-accent' : 'border-line'}`}
     >
       <div className="flex items-baseline justify-between gap-2">
         <span className="font-bold">
@@ -22,7 +22,7 @@ export default function ChapterCard({ chapter, highlight = false }) {
           {highlight && <span className="ml-2 text-xs font-bold text-accent">(your chapter)</span>}
         </span>
         {counted && (
-          <span className={`shrink-0 text-xs font-bold ${ready ? 'text-green-700' : 'text-accent'}`}>
+          <span className={`shrink-0 text-xs font-bold ${ready ? 'text-ok' : 'text-accent'}`}>
             {ready ? 'Enough for a game ✓' : `${count}/${LOCKS_PER_GAME}`}
           </span>
         )}
@@ -31,13 +31,13 @@ export default function ChapterCard({ chapter, highlight = false }) {
       {counted && (
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-card" aria-hidden="true">
           <div
-            className={`h-full rounded-full ${ready ? 'bg-green-600' : 'bg-accent'}`}
+            className={`h-full rounded-full ${ready ? 'bg-ok' : 'bg-accent'}`}
             style={{ width: `${Math.min(1, count / LOCKS_PER_GAME) * 100}%` }}
           />
         </div>
       )}
 
-      <p className="mt-2 text-xs text-neutral-600">
+      <p className="mt-2 text-xs text-muted">
         {counted
           ? `${count} approved question${count === 1 ? '' : 's'} (${LOCKS_PER_GAME} needed for a ${LOCKS_PER_GAME}-lock game)`
           : `${questions.length} question${questions.length === 1 ? '' : 's'}`}
@@ -50,7 +50,7 @@ export default function ChapterCard({ chapter, highlight = false }) {
             type="button"
             aria-expanded={open}
             onClick={() => setOpen((value) => !value)}
-            className="mt-2 text-xs font-bold text-emerald-800 underline decoration-dotted hover:text-emerald-600"
+            className="mt-2 text-xs font-bold text-info underline decoration-dotted hover:brightness-125"
           >
             {open ? '▾ Hide questions' : '▸ Show questions'}
           </button>
@@ -60,7 +60,7 @@ export default function ChapterCard({ chapter, highlight = false }) {
               {questions.map((question, index) => (
                 <li key={index} className="text-ink">
                   {question.question_text}
-                  {question.has_picture && <span className="ml-1 text-neutral-600">🖼️</span>}
+                  {question.has_picture && <span className="ml-1 text-muted">🖼️</span>}
                   {question.status === 'pending' && (
                     <span className="ml-1 text-[10px] font-bold uppercase text-accent">waiting for review</span>
                   )}

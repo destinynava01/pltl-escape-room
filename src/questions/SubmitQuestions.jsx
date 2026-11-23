@@ -16,7 +16,7 @@ function blankQuestion() {
 }
 
 const inputClass =
-  'w-full rounded-lg border border-neutral-500 bg-white px-3 py-2 text-ink placeholder-neutral-400'
+  'w-full rounded-lg border border-line bg-panel px-3 py-2 text-ink placeholder-muted'
 
 const ADD_NEW = '__add_new__'
 
@@ -55,7 +55,7 @@ function PickOrAdd({ label, options, value, onChange, placeholder, disabled, max
                 setAdding(false)
                 onChange('')
               }}
-              className="font-bold text-emerald-800 hover:text-emerald-600"
+              className="font-bold text-info hover:brightness-125"
             >
               Choose an existing one
             </button>
@@ -150,27 +150,27 @@ function ProfessorChapters({ course, professor, chapter }) {
       onToggle={(event) => {
         if (event.currentTarget.open) load()
       }}
-      className="group rounded-xl border border-neutral-400 bg-card"
+      className="group rounded-xl border border-line bg-card"
     >
       <summary className="flex cursor-pointer select-none items-baseline justify-between gap-2 px-5 py-3">
         <span className="font-bold text-accent">
           <span className="mr-1 inline-block transition group-open:rotate-90">▸</span>
           What {professor.trim()} already has
         </span>
-        <span className="text-xs text-neutral-800">Avoid repeats</span>
+        <span className="text-xs text-muted">Avoid repeats</span>
       </summary>
 
       <div className="space-y-3 px-5 pb-5">
-        {loading && !questions && <p className="text-sm text-neutral-800">Loading...</p>}
-        {errorMessage && <p className="text-sm text-red-700">{errorMessage}</p>}
+        {loading && !questions && <p className="text-sm text-muted">Loading...</p>}
+        {errorMessage && <p className="text-sm text-bad">{errorMessage}</p>}
 
         {questions && chapters.length === 0 && (
-          <p className="text-sm text-neutral-800">Nothing here yet. You&apos;ll be the first to add questions.</p>
+          <p className="text-sm text-muted">Nothing here yet. You&apos;ll be the first to add questions.</p>
         )}
 
         {chapters.length > 0 && (
           <>
-            <p className="text-xs text-neutral-600">
+            <p className="text-xs text-muted">
               Questions this professor already has in the shared question bank (from every game), including
               ones still waiting for review. Open a chapter to see them and avoid repeats.
             </p>
@@ -354,7 +354,7 @@ export default function SubmitQuestions() {
           </p>
           <button
             onClick={startAnother}
-            className="mt-6 w-full rounded-lg bg-emerald-700 px-5 py-3 font-bold text-white hover:bg-emerald-600"
+            className="mt-6 w-full rounded-lg bg-info px-5 py-3 font-bold text-on-accent hover:brightness-110"
           >
             Submit More Questions
           </button>
@@ -369,17 +369,17 @@ export default function SubmitQuestions() {
         <BackToGame />
 
         <header className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-800">
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-info">
             PLTL Escape Room
           </p>
           <h1 className="mt-2 text-3xl font-black text-accent sm:text-4xl">Submit Questions</h1>
-          <p className="mt-2 text-neutral-800">
+          <p className="mt-2 text-muted">
             Add up to {MAX_QUESTIONS} questions for one chapter. Each question becomes a lock: students type the answer to open it.
             A PLTL reviewer checks each one before it&apos;s used.
           </p>
         </header>
 
-        <section className="space-y-4 rounded-xl border border-neutral-400 bg-card p-5">
+        <section className="space-y-4 rounded-xl border border-line bg-card p-5">
           <div>
             <p className="font-bold text-accent">Subject</p>
             <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -391,8 +391,8 @@ export default function SubmitQuestions() {
                   aria-pressed={subject === name}
                   className={`rounded-lg border-2 px-2 py-2 text-sm font-bold transition ${
                     subject === name
-                      ? 'border-accent bg-amber-100 text-accent'
-                      : 'border-neutral-500 bg-white text-ink hover:bg-amber-100'
+                      ? 'border-accent bg-warn-soft text-accent'
+                      : 'border-line bg-panel text-ink hover:bg-hover'
                   }`}
                 >
                   {name}
@@ -413,8 +413,8 @@ export default function SubmitQuestions() {
                     aria-pressed={course === name}
                     className={`rounded-lg border-2 px-2 py-2 text-sm font-bold transition ${
                       course === name
-                        ? 'border-accent bg-amber-100 text-accent'
-                        : 'border-neutral-500 bg-white text-ink hover:bg-amber-100'
+                        ? 'border-accent bg-warn-soft text-accent'
+                        : 'border-line bg-panel text-ink hover:bg-hover'
                     }`}
                   >
                     {name}
@@ -439,7 +439,7 @@ export default function SubmitQuestions() {
                 disabled={!course}
               />
               {course && (
-                <span className="mt-1 block text-xs text-neutral-700">
+                <span className="mt-1 block text-xs text-muted">
                   Lab questions are the same for every professor, so keep &ldquo;{LAB_PROFESSOR}&rdquo; unless this is only for one professor&apos;s class.
                 </span>
               )}
@@ -466,7 +466,7 @@ export default function SubmitQuestions() {
         )}
 
         {questions.map((question, index) => (
-          <section key={index} className="space-y-3 rounded-xl border border-neutral-400 bg-card p-5">
+          <section key={index} className="space-y-3 rounded-xl border border-line bg-card p-5">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-bold text-accent">Question {index + 1}</h2>
 
@@ -486,7 +486,7 @@ export default function SubmitQuestions() {
                   <button
                     type="button"
                     onClick={() => removeQuestion(index)}
-                    className="text-xs font-bold text-red-700 hover:text-red-500"
+                    className="text-xs font-bold text-bad hover:brightness-125"
                   >
                     Remove
                   </button>
@@ -511,14 +511,14 @@ export default function SubmitQuestions() {
                 <button
                   type="button"
                   onClick={() => updateQuestion(index, { image_path: null })}
-                  className="block w-full text-center text-xs font-bold text-red-700 hover:text-red-500"
+                  className="block w-full text-center text-xs font-bold text-bad hover:brightness-125"
                 >
                   Remove picture
                 </button>
               </div>
             ) : (
               <label
-                className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-500 px-3 py-2 text-sm text-neutral-800 hover:bg-amber-100 ${
+                className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-line px-3 py-2 text-sm text-muted hover:bg-hover ${
                   question.uploading ? 'pointer-events-none opacity-60' : ''
                 }`}
               >
@@ -536,7 +536,7 @@ export default function SubmitQuestions() {
             )}
 
             {duplicates[index]?.length > 0 && (
-              <div className="rounded-lg border border-accent bg-amber-100 p-3 text-sm">
+              <div className="rounded-lg border border-accent bg-warn-soft p-3 text-sm">
                 <p className="font-bold text-accent">
                   ⚠️ This looks similar to {duplicates[index].length === 1 ? 'a question' : 'questions'} already in the bank:
                 </p>
@@ -544,7 +544,7 @@ export default function SubmitQuestions() {
                   {duplicates[index].map((match) => (
                     <li key={match.id} className="text-ink">
                       &ldquo;{match.question_text}&rdquo;
-                      <span className="block text-xs text-neutral-600">
+                      <span className="block text-xs text-muted">
                         {match.course_name} › {match.professor_name} › {match.topic_name}
                         {' · '}
                         {match.status === 'pending' ? 'waiting for review' : 'approved'}
@@ -554,7 +554,7 @@ export default function SubmitQuestions() {
                     </li>
                   ))}
                 </ul>
-                <p className="mt-2 text-xs text-neutral-800">
+                <p className="mt-2 text-xs text-muted">
                   If it&apos;s a different question, you can still submit it.
                 </p>
               </div>
@@ -573,13 +573,13 @@ export default function SubmitQuestions() {
           <button
             type="button"
             onClick={addQuestion}
-            className="w-full rounded-lg border-2 border-dashed border-emerald-700 px-5 py-3 font-bold text-emerald-800 hover:bg-amber-100"
+            className="w-full rounded-lg border-2 border-dashed border-info px-5 py-3 font-bold text-info hover:bg-hover"
           >
             + Add another question for this chapter ({questions.length} of {MAX_QUESTIONS})
           </button>
         )}
 
-        <section className="grid gap-4 rounded-xl border border-neutral-400 bg-card p-5 sm:grid-cols-2">
+        <section className="grid gap-4 rounded-xl border border-line bg-card p-5 sm:grid-cols-2">
           <label className="block">
             <span className="font-bold text-accent">Your name</span>
             <input
@@ -615,7 +615,7 @@ export default function SubmitQuestions() {
         </section>
 
         {errorMessage && (
-          <p className="rounded-lg border border-red-600 bg-red-50 p-3 text-center text-red-700">
+          <p className="rounded-lg border border-bad bg-bad-soft p-3 text-center text-bad">
             {errorMessage}
           </p>
         )}
@@ -623,7 +623,7 @@ export default function SubmitQuestions() {
         <button
           type="submit"
           disabled={submitting || !course || questions.some((q) => q.uploading)}
-          className="w-full rounded-lg bg-accent px-5 py-4 text-lg font-black text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-lg bg-accent px-5 py-4 text-lg font-black text-on-accent hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting
             ? 'Submitting...'

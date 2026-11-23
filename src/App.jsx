@@ -21,9 +21,9 @@ function App() {
 
   if (!isConfigured) return <NotConfigured />
   if (path === '/join') return <StudentJoin />
-  // The question pages are long forms, so they keep a light, paper look (see index.css)
+  // The submit form keeps a light, paper look (see index.css); review wears the game's vault look
   if (path === '/submit') return <div className="theme-paper"><SubmitQuestions /></div>
-  if (path === '/review') return <div className="theme-paper"><ReviewDashboard /></div>
+  if (path === '/review') return <ReviewDashboard />
   return <LeaderApp />
 }
 
