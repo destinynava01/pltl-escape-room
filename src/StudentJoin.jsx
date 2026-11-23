@@ -251,6 +251,13 @@ function Room({ saved, onLeave }) {
         {lock ? (
           <>
             <p className="font-display text-sm font-black uppercase tracking-[0.3em] text-accent glow-accent">🔒 Lock {lock.lock_no + 1} / {game.lock_count}</p>
+            {lock.key_holder && (
+              <p className={`mt-2 rounded-lg border-2 px-3 py-2 text-center font-display text-xs font-black uppercase tracking-widest ${
+                lock.key_holder.mine ? 'border-accent bg-warn-soft text-accent box-glow-accent' : 'border-line bg-panel text-info'
+              }`}>
+                {lock.key_holder.mine ? '🔑 Your key · you answer this lock' : `🔑 ${lock.key_holder.name} holds this key`}
+              </p>
+            )}
             <h1 className="mt-2 text-xl font-bold leading-snug">{lock.question_text}</h1>
             <QuestionImage path={lock.image_path} className="mt-3 max-h-56" />
 
@@ -260,6 +267,12 @@ function Room({ saved, onLeave }) {
               </p>
             )}
 
+            {lock.key_holder && !lock.key_holder.mine ? (
+              <p className="mt-4 rounded-lg border-2 border-dashed border-line p-3 text-center text-sm text-muted">
+                Only {lock.key_holder.name} can type this answer. Talk it through and help them crack it!
+                {lock.key_holder.next_name && <span className="mt-1 block text-xs">Next key: {lock.key_holder.next_name}</span>}
+              </p>
+            ) : (
             <form onSubmit={submit} className="mt-4 space-y-2">
               <input
                 className={field}
@@ -275,6 +288,7 @@ function Room({ saved, onLeave }) {
                 {sending ? 'Checking…' : '🔑 Unlock'}
               </Button>
             </form>
+            )}
 
             {feedback && (
               <p

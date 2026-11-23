@@ -17,6 +17,9 @@ reviewers, and plays only the **open-response** ones.
 3. **Phones** (`/join`): anyone on a team can type an answer for the team's current lock. Answers use the
    same typo-tolerant matching as Jeopardy (words in parentheses in the answer key are optional). A right
    answer opens the lock for the whole team; teammates see what the team already tried.
+   - **Key-holder**: each lock belongs to one teammate, rotating through the team in the order they
+     joined, so everyone takes a turn. Only the key-holder's phone can submit; teammates see the question
+     and help. The leader can **Pass key** on the projector if the key-holder is stuck or has left.
    - **Hint**: shows the first letter and length of each word, and adds 60 seconds to the team's time.
 4. **Projector** (the leader's screen): a lane per team with its locks, the clock, and hint penalties. It
    never shows questions or answers. **Close calls** lists wrong answers that were almost right; the leader

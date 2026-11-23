@@ -171,6 +171,30 @@ export default function Race({ session, onLobby, onNewGame }) {
                   })}
                   <span className="self-center font-display text-lg font-black text-muted">{row.locks_open}/{game.lock_count}</span>
                 </div>
+
+                {running && !row.escaped && (
+                  <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+                    {row.key_holder ? (
+                      <span className="rounded-md border border-accent/60 bg-warn-soft px-2 py-1 font-bold text-accent">
+                        🔑 {row.key_holder.name}
+                        {row.key_holder.next_name && <span className="font-normal text-muted"> · next {row.key_holder.next_name}</span>}
+                      </span>
+                    ) : (
+                      <span className="font-bold text-bad">No students on this team</span>
+                    )}
+                    {row.key_holder?.team_size > 1 && (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => act({ action: 'pass_key', team_index: row.team_index })}
+                        title="Give this lock to the next teammate (if the key-holder is stuck or has left)"
+                        className="rounded-md border border-line px-2 py-1 text-xs font-bold text-muted hover:bg-hover disabled:opacity-40"
+                      >
+                        ⇢ Pass key
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </section>
