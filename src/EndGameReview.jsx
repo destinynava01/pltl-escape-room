@@ -1,0 +1,239 @@
+import { useEffect, useState } from 'react'
+import { escGame } from './api'
+import { FLAG_REASONS } from './questions/flagReasons'
+import QuestionImage from './questions/QuestionImage'
+
+// Shared with the Jeopardy and Monopoly sites' key, so a leader's name is remembered across all of them
+const NAME_KEY = 'pltlLeaderName'
+
+function readName() {
+  try {
+    return localStorage.getItem(NAME_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}
+
+function saveName(name) {
+  try {
+    localStorage.setItem(NAME_KEY, name)
+  } catch {
+    // Private windows can block storage; the name is just typed again next time
+  }
+}
+
+// One team's result on a lock: "🔓 lock 3 · 2 tries · 💡" or "🔒 not opened"
+function TeamResult({ team, name }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-bold ${
+        team.opened ? 'border-green-700 bg-green-50 text-green-800' : 'border-neutral-400 bg-white text-neutral-600'
+      }`}
+    >
+      {team.opened ? '🔓' : '🔒'} {name} · lock {team.lock_no + 1}
+      {team.opened ? ` · ${team.attempts} ${team.attempts === 1 ? 'try' : 'tries'}` : ' · not opened'}
+      {team.hinted && ' · 💡'}
+      {team.accepted && ' · accepted'}
+    </span>
+  )
+}
+
+// After a game: every lock question with its answer, and how each team did on it.
+// Leaders open one to flag it for the reviewers.
+export default function EndGameReview({ gameId, hostToken, onClose }) {
+  const [data, setData] = useState(null)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [openIndex, setOpenIndex] = useState(null)
+
+  const load = () =>
+    escGame({ action: 'review_rounds', game_id: gameId, host_token: hostToken })
+      .then(setData)
+      .catch((error) => setErrorMessage(error.message || 'Could not load the questions.'))
+
+  // Loads when opened; reloaded after each flag so the ⚑ marks update
+  useEffect(() => {
+    escGame({ action: 'review_rounds', game_id: gameId, host_token: hostToken })
+      .then(setData)
+      .catch((error) => setErrorMessage(error.message || 'Could not load the questions.'))
+  }, [gameId, hostToken])
+
+  const teamName = (i) => data?.teams?.[i]?.name ?? `Team ${i + 1}`
+  const rounds = data?.rounds ?? []
+  const open = openIndex === null ? null : rounds[openIndex]
+
+  return (
+    <div className="fixed inset-0 z-40 overflow-y-auto bg-board p-3 text-ink sm:p-6">
+      <div className="mx-auto max-w-4xl">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-ink bg-card p-4">
+          <div>
+            <h2 className="text-2xl font-black text-accent">Review this game&apos;s locks</h2>
+            <p className="text-sm text-neutral-800">
+              Every answer is shown. Open a question to flag it for the reviewers if something&apos;s off.
+            </p>
+          </div>
+          <button type="button" onClick={onClose} className="rounded-lg border-2 border-ink bg-accent px-5 py-2 font-bold text-white hover:opacity-90">
+            Back to results
+          </button>
+        </div>
+
+        {errorMessage && <p className="rounded-lg bg-white p-3 text-red-700">{errorMessage}</p>}
+        {!data && !errorMessage && <p className="rounded-lg bg-white p-3">Loading the questions...</p>}
+        {data && rounds.length === 0 && <p className="rounded-lg bg-white p-3">This game didn&apos;t get to its locks.</p>}
+
+        <ol className="space-y-2">
+          {rounds.map((round, index) => (
+            <li key={round.question.id}>
+              <button
+                type="button"
+                onClick={() => setOpenIndex(index)}
+                className="w-full rounded-lg border-2 border-ink bg-card p-3 text-left hover:bg-amber-100"
+              >
+                <span className="flex items-start gap-3">
+                  <span className="w-7 shrink-0 text-right font-black text-accent">{index + 1}.</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-bold">{round.question.question_text}</span>
+                    <span className="text-sm text-green-800">Answer: <span className="font-bold">{round.question.answer_text}</span></span>
+                    {round.question.topic_name && <span className="ml-2 text-xs text-neutral-600">· {round.question.topic_name}</span>}
+                  </span>
+                  {round.question.flags.length > 0 && (
+                    <span className="shrink-0 rounded bg-accent px-1.5 text-xs font-bold text-white">⚑ flagged</span>
+                  )}
+                </span>
+                <span className="mt-2 flex flex-wrap gap-1 pl-10">
+                  {round.teams.map((team) => <TeamResult key={team.team_index} team={team} name={teamName(team.team_index)} />)}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      {open && (
+        <QuestionReview
+          round={open}
+          teamName={teamName}
+          gameId={gameId}
+          hostToken={hostToken}
+          onClose={() => setOpenIndex(null)}
+          onFlagged={load}
+        />
+      )}
+    </div>
+  )
+}
+
+function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged }) {
+  const question = round.question
+  const [reason, setReason] = useState('')
+  const [note, setNote] = useState('')
+  const [name, setName] = useState(readName)
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  async function submit(event) {
+    event.preventDefault()
+    setBusy(true)
+    setMessage('')
+    setErrorMessage('')
+
+    try {
+      const data = await escGame({
+        action: 'flag_question',
+        game_id: gameId,
+        host_token: hostToken,
+        question_id: question.id,
+        reason,
+        note,
+        flagged_by: name,
+      })
+      saveName(name.trim())
+      setMessage(data.message)
+      setReason('')
+      setNote('')
+      await onFlagged()
+    } catch (error) {
+      setErrorMessage(error.message || 'Could not send that.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const input = 'w-full rounded-lg border-2 border-neutral-500 bg-white px-3 py-2 text-ink placeholder-neutral-500'
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/80 p-4" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <section className="my-6 w-full max-w-2xl rounded-2xl border-4 border-ink bg-card p-6 text-ink shadow-2xl">
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-emerald-800">{question.topic_name || 'Lock question'}</p>
+          <button type="button" onClick={onClose} className="rounded-lg border-2 border-ink bg-white px-3 py-1 text-sm font-bold hover:bg-amber-100">
+            Close ✕
+          </button>
+        </div>
+
+        <h3 className="mt-3 text-xl font-bold">{question.question_text}</h3>
+        <QuestionImage path={question.image_path} className="mt-3 max-h-64" />
+
+        <p className="mt-4 rounded-lg border-2 border-green-700 bg-green-700 p-3 font-bold text-white">
+          Answer: {question.answer_text}
+          {question.accepted_answers.length > 0 && <span className="font-normal"> (also: {question.accepted_answers.join(', ')})</span>}
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-1">
+          {round.teams.map((team) => <TeamResult key={team.team_index} team={team} name={teamName(team.team_index)} />)}
+        </div>
+
+        {question.flags.length > 0 && (
+          <div className="mt-3 rounded-lg border-2 border-accent bg-amber-50 p-3 text-sm">
+            <p className="font-bold text-accent">Already flagged in this game:</p>
+            <ul className="mt-1 list-disc pl-5">
+              {question.flags.map((flag, index) => (
+                <li key={index}>
+                  {FLAG_REASONS.find((r) => r.value === flag.reason)?.label}: {flag.note}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <form onSubmit={submit} className="mt-5 space-y-3 rounded-xl border-2 border-ink bg-amber-100 p-4">
+          <p className="font-bold text-accent">⚑ Flag for revision</p>
+          <p className="text-xs text-neutral-800">
+            Reviewers see this in their queue as &ldquo;Approved question needs revision&rdquo;. The question stays in
+            games until they change it.
+          </p>
+          <select value={reason} onChange={(event) => setReason(event.target.value)} required aria-label="What's wrong" className={input}>
+            <option value="" disabled>What&apos;s wrong?</option>
+            {FLAG_REASONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+          </select>
+          <textarea
+            value={note}
+            onChange={(event) => setNote(event.target.value)}
+            required
+            rows={3}
+            maxLength={1000}
+            placeholder="Note for the reviewer (required): what should change?"
+            className={input}
+          />
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+            maxLength={80}
+            placeholder="Your name (required)"
+            className={input}
+          />
+          <button
+            type="submit"
+            disabled={busy || !reason || !note.trim() || !name.trim()}
+            className="w-full rounded-lg border-2 border-ink bg-accent px-5 py-2 font-bold text-white hover:opacity-90 disabled:opacity-50"
+          >
+            {busy ? 'Sending...' : 'Send to reviewers'}
+          </button>
+          {message && <p className="text-sm font-bold text-green-700">{message}</p>}
+          {errorMessage && <p className="text-sm font-bold text-red-700">{errorMessage}</p>}
+        </form>
+      </section>
+    </div>
+  )
+}

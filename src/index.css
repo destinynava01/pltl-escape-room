@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Escape Room palette (a vault: steel, brass, ink). Change these four values to re-theme the whole site. */
+@theme {
+  --color-board: #d5dee3;   /* steel (page background) */
+  --color-card: #fbfaf6;    /* paper (cards) */
+  --color-accent: #a4460c; /* brass (titles, main buttons) */
+  --color-ink: #151a21;     /* ink (outlines and text) */
+}
+
+body {
+  font-family: "Gill Sans", "Trebuchet MS", system-ui, sans-serif;
+}
