@@ -10,6 +10,7 @@ import QuestionImage from './QuestionImage'
 import { OpenAnswerField } from './choices'
 import { supabase } from '../supabase'
 import SubjectManager from '../SubjectManager'
+import { HazardTape } from '../ui'
 
 const UTRGV_EMAIL = /^[^@\s]+@utrgv\.edu$/i
 // A default game has 6 locks, each asking one question from the chapter
@@ -71,7 +72,7 @@ export default function ReviewDashboard() {
   }, [])
 
   if (checkingSession) {
-    return <Shell><p className="text-center text-neutral-800">Loading...</p></Shell>
+    return <VaultShell><p className="p-8 text-center font-display text-sm uppercase tracking-widest text-muted">Checking access…</p></VaultShell>
   }
 
   return session ? <ReviewerArea key={session.user.id} session={session} /> : <SignIn />
@@ -94,6 +95,33 @@ function Shell({ children, wide = false }) {
     </main>
   )
 }
+
+// The sign-in screen wears the game's vault look (the review pages themselves stay light for reading)
+function VaultShell({ children }) {
+  return (
+    <div className="theme-vault">
+      <main className="vault-bg flex min-h-dvh flex-col items-center justify-center px-4 py-8 text-ink">
+        <div className="w-full max-w-md">
+          <a href="/" className="mb-4 inline-block text-sm font-bold text-info hover:brightness-125">← Back to the game</a>
+          <div className="overflow-hidden rounded-2xl border-2 border-line bg-card shadow-2xl">
+            <HazardTape />
+            <header className="px-6 pt-6 text-center">
+              <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">● Restricted area</p>
+              <h1 className="mt-2 font-display text-2xl font-black uppercase tracking-widest text-accent glow-accent">Question Review</h1>
+              <p className="mt-1 font-display text-[11px] font-bold uppercase tracking-[0.3em] text-muted">PLTL Escape Room</p>
+            </header>
+            {children}
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+const vaultInput =
+  'w-full rounded-lg border-2 border-line bg-black/50 px-4 py-3 font-mono text-lg text-ink outline-none placeholder-muted focus:border-accent focus:outline-2 focus:outline-accent'
+const vaultButton =
+  'w-full rounded-lg border-2 border-line px-5 py-3 font-bold uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-40'
 
 function SignIn() {
   const [email, setEmail] = useState('')
@@ -161,11 +189,11 @@ function SignIn() {
   }
 
   return (
-    <Shell>
-      <div className="rounded-2xl bg-card p-6 shadow-xl">
+    <VaultShell>
+      <div className="p-6">
         {!sent ? (
           <form onSubmit={sendLink} className="space-y-4">
-            <p className="text-ink">
+            <p className="text-center text-muted">
               Reviewers sign in with their UTRGV email. We&apos;ll email you a sign-in link, so there&apos;s no password.
             </p>
             <input
@@ -173,53 +201,52 @@ function SignIn() {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="you@utrgv.edu"
+              aria-label="Your UTRGV email"
               required
-              className={inputClass}
+              className={vaultInput}
             />
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full rounded-lg bg-accent px-5 py-3 font-bold text-white hover:opacity-90 disabled:opacity-50"
-            >
-              {busy ? 'Sending...' : 'Email Me a Sign-In Link'}
+            <button type="submit" disabled={busy} className={`${vaultButton} bg-accent text-on-accent hover:opacity-90`}>
+              {busy ? 'Checking clearance…' : '🔑 Email me a sign-in link'}
             </button>
           </form>
         ) : (
           <form onSubmit={verifyCode} className="space-y-4">
             <div className="text-center text-4xl">📧</div>
-            <p className="text-center text-ink">
-              Check <span className="font-bold text-emerald-800">{email}</span> and click the sign-in link.
+            <p className="text-center">
+              Check <span className="font-bold text-info">{email}</span> and click the sign-in link.
             </p>
-            <p className="text-center text-sm text-neutral-800">
+            <p className="text-center text-sm text-muted">
               Opened it on another device? Enter the code from the email instead:
             </p>
             <input
               value={code}
               onChange={(event) => setCode(event.target.value)}
-              placeholder="6-digit code"
+              placeholder="000000"
+              aria-label="6-digit code"
               inputMode="numeric"
-              className={`${inputClass} text-center tracking-widest`}
+              autoComplete="one-time-code"
+              className={`${vaultInput} text-center text-2xl tracking-[0.5em]`}
             />
-            <button
-              type="submit"
-              disabled={busy || code.trim().length < 6}
-              className="w-full rounded-lg bg-emerald-700 px-5 py-3 font-bold text-white hover:bg-emerald-600 disabled:opacity-50"
-            >
-              {busy ? 'Checking...' : 'Sign In With Code'}
+            <button type="submit" disabled={busy || code.trim().length < 6} className={`${vaultButton} bg-ok text-on-accent hover:brightness-110`}>
+              {busy ? 'Checking…' : '🔓 Sign in with code'}
             </button>
             <button
               type="button"
               onClick={() => { setSent(false); setCode('') }}
-              className="w-full text-sm font-bold text-emerald-800 hover:text-emerald-600"
+              className="w-full text-sm font-bold text-info hover:brightness-125"
             >
               Use a different email
             </button>
           </form>
         )}
 
-        {errorMessage && <p className="mt-4 text-center text-sm text-red-700">{errorMessage}</p>}
+        {errorMessage && (
+          <p role="alert" className="shake mt-4 rounded-lg border-2 border-bad bg-bad-soft p-2 text-center text-sm font-bold text-bad">
+            ⛔ {errorMessage}
+          </p>
+        )}
       </div>
-    </Shell>
+    </VaultShell>
   )
 }
 

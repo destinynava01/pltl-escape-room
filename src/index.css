@@ -30,6 +30,27 @@
   --font-mono: "Share Tech Mono", ui-monospace, monospace;
 }
 
+/* The vault look again, for a game-styled screen inside a .theme-paper page (the reviewer sign-in) */
+.theme-vault {
+  --color-board: #07090d;
+  --color-card: #111822;
+  --color-panel: #1a2330;
+  --color-hover: #243142;
+  --color-line: #33425a;
+  --color-ink: #e8eef5;
+  --color-muted: #93a1b3;
+  --color-accent: #ffb020;
+  --color-on-accent: #120c00;
+  --color-info: #5fd4ff;
+  --color-ok: #2bd576;
+  --color-ok-soft: #0d2a1c;
+  --color-bad: #ff4d4d;
+  --color-bad-soft: #2e1114;
+  --color-warn: #ffcf6b;
+  --color-warn-soft: #2b2109;
+  color: var(--color-ink);
+}
+
 .theme-paper {
   --color-board: #d5dee3;
   --color-card: #fbfaf6;
@@ -65,7 +86,7 @@ body {
     linear-gradient(90deg, rgb(255 255 255 / 0.025) 1px, transparent 1px);
   background-size: auto, auto, 32px 32px, 32px 32px;
 }
-.theme-paper .vault-bg { background-image: none; }
+.theme-paper .vault-bg:not(.theme-vault .vault-bg) { background-image: none; }
 
 /* Yellow-and-black hazard tape */
 .hazard {
