@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { escPlay, watchGame } from './api'
+import PictureZoom from './questions/PictureZoom'
 import QuestionImage from './questions/QuestionImage'
 import { clock } from './time'
 import { Button, CenterCard, HazardTape, Label } from './ui'
@@ -26,6 +27,18 @@ const readSaved = () => {
 }
 const writeSaved = (value) => {
   try { value ? localStorage.setItem(STORAGE_KEY, JSON.stringify(value)) : localStorage.removeItem(STORAGE_KEY) } catch { /* storage blocked */ }
+}
+
+function ZoomablePicture({ path, onZoom, className = 'max-h-56' }) {
+  if (!path) return null
+  return (
+    <button type="button" onClick={onZoom} className="group relative mx-auto mt-3 block" aria-label="Zoom in on the picture">
+      <QuestionImage path={path} className={className} />
+      <span className="absolute bottom-2 right-2 rounded-md border border-accent bg-black/80 px-2 py-1 text-xs font-bold text-accent group-hover:bg-black">
+        🔍 Tap to zoom
+      </span>
+    </button>
+  )
 }
 
 // The phone: join with the code, wait to be put on a team, then type answers to open your team's locks.
@@ -92,6 +105,7 @@ function Room({ saved, onLeave }) {
   const [feedback, setFeedback] = useState(null) // { kind: 'wrong' | 'close' | 'right' | 'info', text, at } (at replays the animation)
   const [now, setNow] = useState(() => Date.now())
   const lastLock = useRef(null)
+  const [zoomed, setZoomed] = useState(null) // the picture open in the zoom view
 
   const check = useCallback(
     () =>
@@ -259,7 +273,25 @@ function Room({ saved, onLeave }) {
               </p>
             )}
             <h1 className="mt-2 text-xl font-bold leading-snug">{lock.question_text}</h1>
-            <QuestionImage path={lock.image_path} className="mt-3 max-h-56" />
+            <ZoomablePicture path={lock.image_path} onZoom={() => setZoomed(lock.image_path)} />
+            {/* Closes on its own when the lock changes (a different picture) */}
+            {zoomed && zoomed === lock.image_path && (
+              <PictureZoom
+                path={lock.image_path}
+                title="Lock picture"
+                onClose={() => setZoomed(null)}
+                panel={
+                  <div className="text-center">
+                    <p className="font-display text-xs font-bold uppercase tracking-widest text-accent">🔒 Lock {lock.lock_no + 1} / {game.lock_count}</p>
+                    <p className="mt-1 text-sm font-bold text-white">{lock.question_text}</p>
+                    {lock.hint && <p className="mt-2 font-mono text-lg font-black tracking-wider text-white">💡 {lock.hint}</p>}
+                    <button type="button" onClick={() => setZoomed(null)} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
+                      {lock.key_holder?.mine ? 'Back to answer' : 'Back to the lock'}
+                    </button>
+                  </div>
+                }
+              />
+            )}
 
             {lock.hint && (
               <p className="mt-3 rounded-lg border-2 border-dashed border-accent bg-warn-soft p-3 text-center font-mono text-xl font-black tracking-wider">

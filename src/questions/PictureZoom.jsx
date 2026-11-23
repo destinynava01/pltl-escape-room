@@ -97,7 +97,7 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
             src={imageUrl(path)}
             alt={title}
             draggable={false}
-            className="max-h-full max-w-full select-none rounded-md bg-panel object-contain"
+            className="max-h-full max-w-full select-none rounded-md bg-white object-contain"
             style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`, transformOrigin: 'center' }}
           />
         </div>

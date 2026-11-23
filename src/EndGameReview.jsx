@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { escGame } from './api'
 import { FLAG_REASONS } from './questions/flagReasons'
+import PictureZoom from './questions/PictureZoom'
 import QuestionImage from './questions/QuestionImage'
 
 // Shared with the Jeopardy and Monopoly sites' key, so a leader's name is remembered across all of them
@@ -130,6 +131,7 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [zoomed, setZoomed] = useState(false)
 
   async function submit(event) {
     event.preventDefault()
@@ -172,7 +174,30 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
         </div>
 
         <h3 className="mt-3 text-xl font-bold">{question.question_text}</h3>
-        <QuestionImage path={question.image_path} className="mt-3 max-h-64" />
+        {question.image_path && (
+          <button type="button" onClick={() => setZoomed(true)} className="group relative mx-auto mt-3 block" aria-label="Zoom in on the picture">
+            <QuestionImage path={question.image_path} className="max-h-64" />
+            <span className="absolute bottom-2 right-2 rounded-md border border-accent bg-black/80 px-2 py-1 text-xs font-bold text-accent group-hover:bg-black">
+              🔍 Zoom
+            </span>
+          </button>
+        )}
+        {zoomed && (
+          <PictureZoom
+            path={question.image_path}
+            title="Lock picture"
+            onClose={() => setZoomed(false)}
+            panel={
+              <div className="text-center">
+                <p className="text-sm font-bold text-white">{question.question_text}</p>
+                <p className="mt-2 font-bold text-ok">Answer: {question.answer_text}</p>
+                <button type="button" onClick={() => setZoomed(false)} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
+                  Back
+                </button>
+              </div>
+            }
+          />
+        )}
 
         <p className="mt-4 rounded-lg border-2 border-ok bg-ok p-3 font-bold text-on-accent">
           Answer: {question.answer_text}
