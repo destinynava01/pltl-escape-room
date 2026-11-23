@@ -79,10 +79,11 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
   }
 
   const buttonClass =
-    'rounded-lg border border-line bg-card px-3 py-1.5 text-sm font-bold text-ink hover:bg-hover'
+    'rounded-lg border border-accent/60 bg-black/70 px-3 py-1.5 font-display text-sm font-bold text-accent hover:bg-black'
 
   return (
-    <div className="fixed inset-0 z-[60] flex flex-col bg-black/95 text-white lg:flex-row" role="dialog" aria-modal="true" aria-label={title}>
+    <div className="vault-bg fixed inset-0 z-[60] flex flex-col text-ink lg:flex-row" role="dialog" aria-modal="true" aria-label={title}>
+      <div aria-hidden="true" className="hazard pointer-events-none absolute inset-x-0 top-0 z-10 h-1.5" />
       <div className="relative min-h-0 flex-1 overflow-hidden">
         <div
           className="flex h-full w-full cursor-grab touch-none items-center justify-center active:cursor-grabbing"
@@ -106,13 +107,13 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
           <button type="button" onClick={() => zoomBy(1.25)} className={buttonClass} aria-label="Zoom in">＋</button>
           <button type="button" onClick={() => zoomBy(0.8)} className={buttonClass} aria-label="Zoom out">－</button>
           <button type="button" onClick={reset} className={buttonClass}>Fit</button>
-          <span className="self-center rounded bg-black/60 px-2 py-1 text-xs text-white">{Math.round(scale * 100)}%</span>
+          <span className="self-center rounded border border-line bg-black/70 px-2 py-1 font-mono text-xs text-ink">{Math.round(scale * 100)}%</span>
         </div>
 
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-3 top-3 rounded-lg bg-accent px-4 py-1.5 text-sm font-bold text-on-accent hover:opacity-90"
+          className="absolute right-3 top-3 rounded-lg bg-accent px-4 py-1.5 font-display text-sm font-bold uppercase tracking-wider text-on-accent box-glow-accent hover:opacity-90"
         >
           Close ✕
         </button>
@@ -123,7 +124,7 @@ export default function PictureZoom({ path, onClose, panel = null, title = 'Pict
       </div>
 
       {panel && (
-        <aside className="max-h-[45vh] shrink-0 overflow-y-auto border-t border-line bg-panel p-4 text-ink lg:max-h-none lg:w-96 lg:border-l lg:border-t-0">
+        <aside className="max-h-[45vh] shrink-0 overflow-y-auto border-t-2 border-accent/50 bg-card p-4 text-ink lg:max-h-none lg:w-96 lg:border-l-2 lg:border-t-0">
           {panel}
         </aside>
       )}

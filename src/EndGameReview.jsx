@@ -189,7 +189,7 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
             onClose={() => setZoomed(false)}
             panel={
               <div className="text-center">
-                <p className="text-sm font-bold text-white">{question.question_text}</p>
+                <p className="text-sm font-bold text-ink">{question.question_text}</p>
                 <p className="mt-2 font-bold text-ok">Answer: {question.answer_text}</p>
                 <button type="button" onClick={() => setZoomed(false)} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
                   Back

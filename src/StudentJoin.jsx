@@ -283,8 +283,8 @@ function Room({ saved, onLeave }) {
                 panel={
                   <div className="text-center">
                     <p className="font-display text-xs font-bold uppercase tracking-widest text-accent">🔒 Lock {lock.lock_no + 1} / {game.lock_count}</p>
-                    <p className="mt-1 text-sm font-bold text-white">{lock.question_text}</p>
-                    {lock.hint && <p className="mt-2 font-mono text-lg font-black tracking-wider text-white">💡 {lock.hint}</p>}
+                    <p className="mt-1 text-sm font-bold text-ink">{lock.question_text}</p>
+                    {lock.hint && <p className="mt-2 font-mono text-lg font-black tracking-wider text-ink">💡 {lock.hint}</p>}
                     <button type="button" onClick={() => setZoomed(null)} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
                       {lock.key_holder?.mine ? 'Back to answer' : 'Back to the lock'}
                     </button>
