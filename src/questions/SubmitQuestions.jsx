@@ -8,7 +8,8 @@ import { uploadQuestionImage } from './images'
 import QuestionImage from './QuestionImage'
 import { OpenAnswerField } from './choices'
 
-const MAX_QUESTIONS = 5
+// The server accepts up to 20 per submission for Escape Room (one chapter)
+const MAX_QUESTIONS = 20
 
 function blankQuestion() {
   return { question_text: '', open_answer: '', accepted_answers: [], image_path: null, uploading: false }
@@ -185,7 +186,7 @@ function ProfessorChapters({ course, professor, chapter }) {
   )
 }
 
-// Public form for submitting up to 5 open-response questions for one chapter at a time.
+// Public form for submitting up to 20 open-response questions for one chapter at a time.
 // Everything goes to the review queue; nothing reaches a game until it's approved.
 export default function SubmitQuestions() {
   const [catalog, setCatalog] = useState([])
@@ -373,7 +374,7 @@ export default function SubmitQuestions() {
           </p>
           <h1 className="mt-2 text-3xl font-black text-accent sm:text-4xl">Submit Questions</h1>
           <p className="mt-2 text-neutral-800">
-            Add up to 5 questions for one chapter. Each question becomes a lock: students type the answer to open it.
+            Add up to {MAX_QUESTIONS} questions for one chapter. Each question becomes a lock: students type the answer to open it.
             A PLTL reviewer checks each one before it&apos;s used.
           </p>
         </header>
