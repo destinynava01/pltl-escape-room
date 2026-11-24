@@ -224,7 +224,7 @@ function Room({ saved, onLeave }) {
       {Array.from({ length: game.lock_count }, (_, k) => (
         <span
           key={k}
-          className={`flex h-9 w-9 items-center justify-center rounded-md border-2 text-lg ${
+          className={`flex items-center justify-center rounded-md border-2 ${game.lock_count > 15 ? 'h-7 w-7 text-sm' : 'h-9 w-9 text-lg'} ${
             k < (team?.locks_open ?? 0) ? 'unlock-pop border-ok bg-ok-soft box-glow-ok'
               : k === team?.current_lock ? 'animate-pulse border-accent bg-warn-soft box-glow-accent'
               : 'border-line bg-panel opacity-50 grayscale'

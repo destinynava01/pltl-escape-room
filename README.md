@@ -11,9 +11,9 @@ reviewers, and plays only the **open-response** ones.
 ## How a game works
 
 1. **Lobby** (`/`): create a game, show the join code / QR, name the teams, approve students onto teams,
-   pick subject > course > (professor) > chapters, and choose how many locks (4, 6, 8 or 10).
-2. **Start**: the server picks that many open-response questions at random from the chosen chapters. Every
-   team gets the **same locks in its own order**, so shouting an answer across the room doesn't help.
+   pick subject > course > (professor) > chapters, and choose how many locks (6, 10, 15, 20, 25 or 30).
+2. **Start**: each team draws its **own random set** of that many open-response questions from the chosen
+   chapters (two teams may share a question by chance), so shouting an answer across the room rarely helps.
 3. **Phones** (`/join`): anyone on a team can type an answer for the team's current lock. Answers use the
    same typo-tolerant matching as Jeopardy (words in parentheses in the answer key are optional). A right
    answer opens the lock for the whole team; teammates see what the team already tried.

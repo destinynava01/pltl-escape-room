@@ -3,8 +3,8 @@ export const SITE_NAME = 'PLTL Escape Room'
 export const SITE_TAGLINE = 'Answer to unlock. First team out wins.'
 
 // Locks per game (the server allows 3 to 12) and the time added for each hint
-export const LOCK_CHOICES = [4, 6, 8, 10]
-export const DEFAULT_LOCKS = 6
+export const LOCK_CHOICES = [6, 10, 15, 20, 25, 30]
+export const DEFAULT_LOCKS = 10
 export const DEFAULT_HINT_PENALTY = 60
 
 // Teams: the lobby starts with MIN_TEAMS and lets the leader add up to MAX_TEAMS.

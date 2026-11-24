@@ -371,7 +371,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                     <p className={`mt-2 text-xs font-bold ${questionEstimate < lockCount ? 'text-bad' : 'text-muted'}`}>
                       {questionEstimate < lockCount
                         ? `These chapters have ${questionEstimate} open-response question${questionEstimate === 1 ? '' : 's'}. ${lockCount} locks need ${lockCount}: pick more chapters or fewer locks.`
-                        : `${lockCount} locks, picked at random from these ${questionEstimate} questions. Every team gets the same locks in its own order.`}
+                        : `${lockCount} locks, picked at random from these ${questionEstimate} questions. Each team draws its own random locks.`}
                     </p>
                   )}
                 </>
@@ -380,7 +380,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
               {professor && (
                 <>
                   <p className="mt-4"><Label>Locks per team</Label></p>
-                  <div className="mt-2 grid grid-cols-4 gap-2">
+                  <div className="mt-2 grid grid-cols-3 gap-2">
                     {LOCK_CHOICES.map((n) => (
                       <button key={n} type="button" aria-pressed={lockCount === n}
                         onClick={() => setLockCount(n)} className={choice(lockCount === n)}>

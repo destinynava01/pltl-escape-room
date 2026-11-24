@@ -157,7 +157,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                     return (
                       <span
                         key={k}
-                        className={`relative flex h-14 w-14 items-center justify-center rounded-lg border-2 text-2xl ${
+                        className={`relative flex items-center justify-center rounded-lg border-2 ${game.lock_count > 15 ? 'h-10 w-10 text-lg' : 'h-14 w-14 text-2xl'} ${
                           open ? 'unlock-pop border-ok bg-ok-soft box-glow-ok'
                             : current ? 'animate-pulse border-accent bg-warn-soft box-glow-accent'
                             : 'border-line bg-panel opacity-50 grayscale'
