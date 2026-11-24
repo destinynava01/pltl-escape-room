@@ -34,6 +34,7 @@ function TeamResult({ team, name }) {
       {team.opened ? '🔓' : '🔒'} {name} · lock {team.lock_no + 1}
       {team.opened ? ` · ${team.attempts} ${team.attempts === 1 ? 'try' : 'tries'}` : ' · not opened'}
       {team.hinted && ' · 💡'}
+      {team.revealed && ' · answer revealed'}
       {team.accepted && ' · accepted'}
     </span>
   )
@@ -62,14 +63,23 @@ export default function EndGameReview({ gameId, hostToken, onClose }) {
   const rounds = data?.rounds ?? []
   const open = openIndex === null ? null : rounds[openIndex]
 
+  // One column per team: that team's own locks, in the order it got them
+  const columns = (data?.teams ?? []).map((team, t) => {
+    const locks = rounds
+      .map((round, index) => ({ round, index, mine: round.teams.find((x) => x.team_index === t) }))
+      .filter((entry) => entry.mine)
+      .sort((a, b) => a.mine.lock_no - b.mine.lock_no)
+    return { team, t, locks, opened: locks.filter((entry) => entry.mine.opened).length }
+  })
+
   return (
-    <div className="fixed inset-0 z-40 overflow-y-auto bg-board p-3 text-ink sm:p-6">
-      <div className="mx-auto max-w-4xl">
+    <div className="vault-bg fixed inset-0 z-40 overflow-y-auto p-3 text-ink sm:p-6">
+      <div className="mx-auto max-w-7xl">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border-2 border-line bg-card p-4">
           <div>
-            <h2 className="text-2xl font-black text-accent">Review this game&apos;s locks</h2>
+            <h2 className="font-display text-2xl font-black uppercase tracking-wider text-accent">Review this game&apos;s locks</h2>
             <p className="text-sm text-muted">
-              Every answer is shown. Open a question to flag it for the reviewers if something&apos;s off.
+              Each team&apos;s locks, in order. Open one to see it full size and flag it for the reviewers if something&apos;s off.
             </p>
           </div>
           <button type="button" onClick={onClose} className="rounded-lg border-2 border-line bg-accent px-5 py-2 font-bold text-on-accent hover:opacity-90">
@@ -81,32 +91,56 @@ export default function EndGameReview({ gameId, hostToken, onClose }) {
         {!data && !errorMessage && <p className="rounded-lg bg-panel p-3">Loading the questions...</p>}
         {data && rounds.length === 0 && <p className="rounded-lg bg-panel p-3">This game didn&apos;t get to its locks.</p>}
 
-        <ol className="space-y-2">
-          {rounds.map((round, index) => (
-            <li key={round.question.id}>
-              <button
-                type="button"
-                onClick={() => setOpenIndex(index)}
-                className="w-full rounded-lg border-2 border-line bg-card p-3 text-left hover:bg-hover"
-              >
-                <span className="flex items-start gap-3">
-                  <span className="w-7 shrink-0 text-right font-black text-accent">{index + 1}.</span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-bold">{round.question.question_text}</span>
-                    <span className="text-sm text-ok">Answer: <span className="font-bold">{round.question.answer_text}</span></span>
-                    {round.question.topic_name && <span className="ml-2 text-xs text-muted">· {round.question.topic_name}</span>}
-                  </span>
-                  {round.question.flags.length > 0 && (
-                    <span className="shrink-0 rounded bg-accent px-1.5 text-xs font-bold text-on-accent">⚑ flagged</span>
-                  )}
-                </span>
-                <span className="mt-2 flex flex-wrap gap-1 pl-10">
-                  {round.teams.map((team) => <TeamResult key={team.team_index} team={team} name={teamName(team.team_index)} />)}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ol>
+        {columns.length > 0 && rounds.length > 0 && (
+          <div className="grid auto-cols-[minmax(17rem,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2">
+            {columns.map(({ team, t, locks, opened }) => (
+              <section key={t} className="min-w-0">
+                <header
+                  className="sticky top-0 z-10 mb-2 overflow-hidden rounded-lg border border-line bg-card py-2 pl-5 pr-3"
+                  style={{ boxShadow: `inset 0 0 0 1px ${team.color}55` }}
+                >
+                  <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5" style={{ background: team.color }} />
+                  <p className="font-display text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: team.color }}>
+                    Team {String(t + 1).padStart(2, '0')} · {opened}/{locks.length} opened
+                  </p>
+                  <p className="font-mono text-lg font-black">{team.name}</p>
+                </header>
+
+                <ol className="space-y-2">
+                  {locks.map(({ round, index, mine }) => (
+                    <li key={round.question.id}>
+                      <button
+                        type="button"
+                        onClick={() => setOpenIndex(index)}
+                        className={`w-full rounded-lg border-2 bg-card p-3 text-left hover:bg-hover ${mine.opened ? 'border-ok/60' : 'border-line'}`}
+                      >
+                        <span className="flex items-center justify-between gap-2">
+                          <span className="font-display text-xs font-black uppercase tracking-widest text-accent">
+                            {mine.opened ? '🔓' : '🔒'} Lock {mine.lock_no + 1}
+                          </span>
+                          {round.question.flags.length > 0 && (
+                            <span className="rounded bg-accent px-1.5 text-xs font-bold text-on-accent">⚑ flagged</span>
+                          )}
+                        </span>
+                        {round.question.image_path && (
+                          <QuestionImage path={round.question.image_path} className="mt-2 max-h-28" />
+                        )}
+                        <span className="mt-2 block text-sm font-bold leading-snug">{round.question.question_text}</span>
+                        <span className="mt-1 block text-sm text-ok">Answer: <span className="font-bold">{round.question.answer_text}</span></span>
+                        <span className={`mt-2 inline-block rounded-md border px-2 py-0.5 text-xs font-bold ${mine.opened ? 'border-ok bg-ok-soft text-ok' : 'border-line bg-panel text-muted'}`}>
+                          {mine.opened ? `Opened · ${mine.attempts} ${mine.attempts === 1 ? 'try' : 'tries'}` : 'Not opened'}
+                          {mine.hinted && ' · 💡 hint'}
+                          {mine.revealed && ' · answer revealed'}
+                          {mine.accepted && ' · leader accepted'}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))}
+          </div>
+        )}
       </div>
 
       {open && (
