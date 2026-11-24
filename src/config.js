@@ -9,7 +9,7 @@ export const DEFAULT_HINT_PENALTY = 60
 
 // Teams: the lobby starts with MIN_TEAMS and lets the leader add up to MAX_TEAMS.
 // (The server enforces the same limits and uses the same team colors.)
-export const MIN_TEAMS = 2
+export const MIN_TEAMS = 1 // one team (even one student) can play solo
 export const MAX_TEAMS = 8
 export const TEAM_COLORS = ['#2563eb', '#9333ea', '#0891b2', '#be185d', '#4d7c0f', '#c2410c', '#475569', '#0f766e']
 
