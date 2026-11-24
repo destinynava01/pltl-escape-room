@@ -235,23 +235,44 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
           <h2 className="font-display text-lg font-black uppercase tracking-widest text-accent">Teams</h2>
           <div className="mt-4 space-y-3">
             {teamNames.map((name, i) => (
-              <div key={i} className="rounded-lg border-2 border-line bg-panel p-4">
-                <div className="flex items-center gap-3">
-                  <span className="h-5 w-5 shrink-0 rounded-full border-2 border-line" style={{ background: TEAM_COLORS[i] }} />
-                  <input
-                    className={field}
-                    value={name}
-                    maxLength={40}
-                    disabled={finalized}
-                    aria-label={`Name for Team ${i + 1}`}
-                    onChange={(e) => renameTeam(i, e.target.value)}
-                  />
+              // A team is a vault keycard: color stripe, padlock badge, team number, name, and a barcode
+              <div
+                key={i}
+                className="relative overflow-hidden rounded-xl border border-line bg-black/40 py-3 pl-6 pr-3 shadow-lg"
+                style={{ boxShadow: `inset 0 0 0 1px ${TEAM_COLORS[i]}33, 0 0 18px ${TEAM_COLORS[i]}22` }}
+              >
+                <span aria-hidden="true" className="absolute inset-y-0 left-0 w-2.5" style={{ background: TEAM_COLORS[i] }} />
+                <span
+                  aria-hidden="true"
+                  className="barcode pointer-events-none absolute inset-y-3 right-3 w-10 opacity-25"
+                />
+                <div className="relative flex items-center gap-3">
+                  <span
+                    aria-hidden="true"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-2 bg-black/60 text-xl"
+                    style={{ borderColor: TEAM_COLORS[i], boxShadow: `0 0 12px ${TEAM_COLORS[i]}88` }}
+                  >
+                    {finalized ? '🔒' : '🔓'}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.35em]" style={{ color: TEAM_COLORS[i] }}>
+                      Team {String(i + 1).padStart(2, '0')}{finalized && ' · sealed'}
+                    </p>
+                    <input
+                      className="mt-1 w-full rounded-md border border-line bg-black/50 px-3 py-1.5 font-mono text-lg font-bold text-ink outline-none focus:border-accent focus:outline-2 focus:outline-accent disabled:border-transparent disabled:bg-transparent disabled:px-0"
+                      value={name}
+                      maxLength={40}
+                      disabled={finalized}
+                      aria-label={`Name for Team ${i + 1}`}
+                      onChange={(e) => renameTeam(i, e.target.value)}
+                    />
+                  </div>
                   {!finalized && teamNames.length > MIN_TEAMS && (
                     <button
                       type="button"
                       onClick={() => removeTeam(i)}
                       aria-label={`Remove team ${i + 1}`}
-                      className="rounded-lg border-2 border-line px-3 py-2 font-bold hover:bg-hover"
+                      className="relative rounded-lg border border-line bg-black/60 px-3 py-2 font-bold text-muted hover:border-bad hover:text-bad"
                     >
                       ✕
                     </button>
@@ -435,11 +456,12 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
               {teamNames.map((_, i) => {
                 const members = players.filter((p) => p.approval_status === 'approved' && p.team_index === i)
                 return (
-                  <div key={i} className="rounded-lg border-2 border-line bg-panel p-3">
-                    <p className="flex items-center gap-2 font-black">
-                      <span className="h-3 w-3 rounded-full border border-line" style={{ background: TEAM_COLORS[i] }} />
-                      {teamLabel(i)} ({members.length})
+                  <div key={i} className="relative overflow-hidden rounded-lg border border-line bg-black/40 py-3 pl-5 pr-3">
+                    <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5" style={{ background: TEAM_COLORS[i] }} />
+                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: TEAM_COLORS[i] }}>
+                      Team {String(i + 1).padStart(2, '0')} · {members.length} inside
                     </p>
+                    <p className="font-mono font-black">🔒 {teamLabel(i)}</p>
                     <ul className="mt-1 space-y-1 text-sm">
                       {members.map((p) => (
                         <li key={p.id} className="flex items-center justify-between gap-2">

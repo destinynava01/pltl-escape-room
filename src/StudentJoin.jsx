@@ -189,7 +189,15 @@ function Room({ saved, onLeave }) {
   const header = (
     <div className="mb-4 flex items-center justify-between gap-3">
       <p className="flex items-center gap-2 font-black">
-        {myTeam && <span aria-hidden="true" className="h-4 w-4 rounded-full border-2 border-line" style={{ background: myTeam.color }} />}
+        {myTeam && (
+          <span
+            aria-hidden="true"
+            className="flex h-7 w-7 items-center justify-center rounded-md border-2 bg-black/60 text-sm"
+            style={{ borderColor: myTeam.color, boxShadow: `0 0 10px ${myTeam.color}88` }}
+          >
+            🔒
+          </span>
+        )}
         {myTeam?.name ?? player.display_name}
       </p>
       {game.status !== 'setup' && <p className="font-mono text-2xl font-black tabular-nums text-bad glow-bad">{clock(elapsed + (team?.penalty_seconds ?? 0))}</p>}
