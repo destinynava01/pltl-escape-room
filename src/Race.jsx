@@ -209,9 +209,11 @@ export default function Race({ session, onLobby, onNewGame }) {
                     <span className={`font-mono text-3xl font-black tabular-nums ${row.escaped ? 'text-ok glow-ok' : 'text-ink'}`}>
                       {row.escaped ? `🎉 ${clock(timeOf(row))}` : clock(timeOf(row))}
                     </span>
-                    {row.hints > 0 && (
+                    {row.penalty_seconds > 0 && (
                       <span className="block text-xs font-bold text-muted">
-                        💡 {row.hints} hint{row.hints === 1 ? '' : 's'} (+{clock(row.penalty_seconds)})
+                        +{clock(row.penalty_seconds)} added
+                        {row.hints > 0 && ` · 💡 ${row.hints} hint${row.hints === 1 ? '' : 's'}`}
+                        {row.miss_penalty_seconds > 0 && ` · ✗ +${clock(row.miss_penalty_seconds)} wrong guesses`}
                       </span>
                     )}
                   </p>
@@ -337,7 +339,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                   </span>
                   <span className="text-right">
                     {row.escaped ? `🎉 ${clock(row.total_seconds)}` : `${row.locks_open}/${game.lock_count} locks`}
-                    {row.hints > 0 && <span className="block text-xs text-muted">💡 {row.hints} (+{clock(row.penalty_seconds)})</span>}
+                    {row.penalty_seconds > 0 && <span className="block text-xs text-muted">+{clock(row.penalty_seconds)} added</span>}
                   </span>
                 </p>
               ))}

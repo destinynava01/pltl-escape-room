@@ -115,9 +115,13 @@ function Room({ saved, onLeave }) {
           if (data.ended) return onLeave('That game has ended. Join another with a new code.')
           // A new lock (opened by anyone on the team): clear the box and the old message
           const lock = data.lock?.lock_no ?? null
-          if (lock !== lastLock.current) {
-            if (lastLock.current !== null && lock !== null) setFeedback({ kind: 'right', text: `✅ Access granted · lock ${lastLock.current + 1} open`, at: Date.now() })
-            lastLock.current = lock
+          const key = data.lock ? `${data.lock.lock_no}|${data.lock.question_text}` : null
+          if (key !== lastLock.current) {
+            const before = lastLock.current === null ? null : Number(lastLock.current.split('|')[0])
+            if (before !== null && lock !== null && lock > before) {
+              setFeedback({ kind: 'right', text: `✅ Access granted · lock ${before + 1} open`, at: Date.now() })
+            }
+            lastLock.current = key
             setTyped('')
           }
           // offset: server clock minus this phone's clock, so the timer matches the projector
@@ -155,8 +159,12 @@ function Room({ saved, onLeave }) {
       if (result.moved_on) setFeedback({ kind: 'info', text: result.message, at })
       else if (result.escaped) setFeedback({ kind: 'right', text: '🎉 Access granted · you escaped!', at })
       else if (result.correct) setFeedback({ kind: 'right', text: '✅ Access granted · next lock…', at })
-      else if (result.close) setFeedback({ kind: 'close', text: '⚠ So close · check your spelling, or your leader may accept it', at })
-      else setFeedback({ kind: 'wrong', text: '⛔ Access denied · try again', at })
+      else if (result.revealed) setFeedback({ kind: 'reveal', text: `🔓 Out of guesses · +${result.penalty} s`, at })
+      else {
+        const left = `+${result.penalty} s · ${result.guesses_left} guess${result.guesses_left === 1 ? '' : 'es'} left`
+        if (result.close) setFeedback({ kind: 'close', text: `⚠ So close · ${left}`, at })
+        else setFeedback({ kind: 'wrong', text: `⛔ Access denied · ${left}`, at })
+      }
       if (!result.correct) setTyped('')
       await check()
     } catch (e) {
@@ -255,7 +263,7 @@ function Room({ saved, onLeave }) {
           </h1>
           <p className="mt-2 text-lg font-bold">
             {team?.escaped ? `Time ${clock(team.total_seconds)}` : `${team?.locks_open ?? 0} of ${game.lock_count} locks open`}
-            {team?.hints > 0 && ` (incl. ${clock(team.penalty_seconds)} for hints)`}
+            {team?.penalty_seconds > 0 && ` (incl. +${clock(team.penalty_seconds)} for hints and wrong guesses)`}
           </p>
           <p className="mt-1 text-muted">
             {game.status === 'finished' ? `Your team placed #${team?.place}.` : `Currently #${team?.place}. Waiting for the other teams…`}
@@ -306,6 +314,28 @@ function Room({ saved, onLeave }) {
               />
             )}
 
+            {lock.reveal && (
+              <div className="mt-3 rounded-lg border-2 border-warn bg-warn-soft p-3 text-center">
+                <p className="font-display text-xs font-black uppercase tracking-widest text-warn">Out of guesses on the last lock</p>
+                <p className="mt-1">The answer was <span className="font-mono text-lg font-black text-ink">{lock.reveal.answer}</span></p>
+                <p className="mt-1 text-sm text-muted">
+                  {lock.reveal.comes_back_in > 0
+                    ? `That question comes back in ${lock.reveal.comes_back_in} lock${lock.reveal.comes_back_in === 1 ? '' : 's'}. Remember it!`
+                    : 'It was your last lock: type that answer to open it.'}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-3 flex items-center justify-between gap-2 text-xs font-bold text-muted">
+              <span className="flex items-center gap-1" aria-label={`${lock.guesses_left} of 3 guesses left`}>
+                {[0, 1, 2].map((k) => (
+                  <span key={k} className={`inline-block h-2.5 w-6 rounded-full ${k < lock.guesses_left ? 'bg-accent box-glow-accent' : 'bg-line'}`} />
+                ))}
+                <span className="ml-1">{lock.guesses_left} guess{lock.guesses_left === 1 ? '' : 'es'} left</span>
+              </span>
+              <span>A miss adds +{lock.next_miss_penalty} s</span>
+            </div>
+
             {lock.hint && (
               <p className="mt-3 rounded-lg border-2 border-dashed border-accent bg-warn-soft p-3 text-center font-mono text-xl font-black tracking-wider">
                 💡 {lock.hint}
@@ -341,7 +371,7 @@ function Room({ saved, onLeave }) {
                 role="status"
                 className={`mt-3 rounded-lg border-2 p-2 text-center font-display text-sm font-black uppercase tracking-wide ${
                   feedback.kind === 'right' ? 'flash-ok border-ok bg-ok-soft text-ok'
-                    : feedback.kind === 'close' ? 'shake border-warn bg-warn-soft text-warn'
+                    : feedback.kind === 'close' || feedback.kind === 'reveal' ? 'shake border-warn bg-warn-soft text-warn'
                     : feedback.kind === 'wrong' ? 'shake border-bad bg-bad-soft text-bad'
                     : 'border-line bg-panel text-muted'
                 }`}

@@ -20,6 +20,9 @@ reviewers, and plays only the **open-response** ones.
    - **Key-holder**: each lock belongs to one teammate, rotating through the team in the order they
      joined, so everyone takes a turn. Only the key-holder's phone can submit; teammates see the question
      and help. The leader can **Pass key** on the projector if the key-holder is stuck or has left.
+   - **Three guesses per lock**: wrong guesses add 15 s, then 30 s, then 45 s to the team's time. After the
+     third, the answer is shown and that question moves 3 locks later in the team's chain (the chain keeps its
+     length; the locks in between shift up), so the team meets it again and has to type it.
    - **Hint**: shows the first letter and length of each word, and adds 60 seconds to the team's time.
 4. **Projector** (the leader's screen): a lane per team with its locks, the clock, and hint penalties. It
    never shows questions or answers. **Close calls** lists wrong answers that were almost right; the leader
