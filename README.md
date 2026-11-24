@@ -24,8 +24,11 @@ reviewers, and plays only the **open-response** ones.
 4. **Projector** (the leader's screen): a lane per team with its locks, the clock, and hint penalties. It
    never shows questions or answers. **Close calls** lists wrong answers that were almost right; the leader
    can show the answer key and **Accept** one to open that team's lock.
-5. **End**: the game ends when every team has escaped, or when the leader selects End game (teams still
-   inside are ranked by locks opened, then time). The results card has **Review questions** (with Flag for
+5. **Final countdown**: when the first team escapes, everyone else has **5 minutes**. The projector shows a
+   red countdown (with a fanfare, ticks in the last 10 seconds and a lockdown buzzer; 🔊 toggles sound) and
+   phones show it too. Answers after the deadline are refused.
+6. **End**: the game ends when every team has escaped, when the countdown runs out, or when the leader
+   selects End game (teams still inside are ranked by locks opened, then time). The results card has **Review questions** (with Flag for
    revision, name required) and **Download results (.xlsx)**: Summary, Locks, Attempts, Students.
 
 Ranking: escaped teams first by total time (time + hint penalties), then everyone else by locks opened,

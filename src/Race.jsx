@@ -3,6 +3,8 @@ import { escGame, watchGame } from './api'
 import { SITE_NAME } from './config'
 import EndGameReview from './EndGameReview'
 import { downloadResults } from './gameResults'
+import LockStrip from './LockStrip'
+import { playEscape, playLockdown, playTeamOut, playTick, setSoundOn, soundOn } from './sounds'
 import { clock } from './time'
 import { Button, HazardTape, Label, Page } from './ui'
 
@@ -19,6 +21,9 @@ export default function Race({ session, onLobby, onNewGame }) {
   const [reviewing, setReviewing] = useState(false)
   const [downloading, setDownloading] = useState(false)
   const autoEnded = useRef(false)
+  const [sound, setSound] = useState(soundOn) // the projector's sound effects (on by default)
+  const escapedBefore = useRef(null) // how many teams had escaped at the last update, for the fanfare
+  const lastTick = useRef(null) // the last countdown second that ticked
 
   const load = useCallback(() =>
     escGame({ action: 'race', game_id: gameId, host_token: hostToken })
@@ -56,6 +61,42 @@ export default function Race({ session, onLobby, onNewGame }) {
       escGame({ action: 'end_game', game_id: gameId, host_token: hostToken }).then(load).catch(() => {})
     }
   }, [running, allOut, gameId, hostToken, load])
+
+  // The final countdown: starts on the server when the first team escapes
+  const deadline = game?.final_countdown_ends_at ? Date.parse(game.final_countdown_ends_at) : null
+  const countdownLeft = running && deadline !== null && race ? Math.max(0, (deadline - (now + race.offset)) / 1000) : null
+  const firstOut = standings.filter((s) => s.escaped).sort((a, b) => a.total_seconds - b.total_seconds)[0]
+
+  // A fanfare when a team escapes (the first one also sounds the countdown alert)
+  const escapedCount = standings.filter((s) => s.escaped).length
+  useEffect(() => {
+    if (!race) return
+    if (escapedBefore.current !== null && escapedCount > escapedBefore.current && sound) {
+      if (escapedBefore.current === 0) playEscape()
+      else playTeamOut()
+    }
+    escapedBefore.current = escapedCount
+  }, [escapedCount, race, sound])
+
+  // Ticks in the last 10 seconds, then the lockdown buzzer and the end of the game
+  const secondsLeft = countdownLeft === null ? null : Math.ceil(countdownLeft)
+  useEffect(() => {
+    if (secondsLeft === null || secondsLeft === lastTick.current) return
+    lastTick.current = secondsLeft
+    if (secondsLeft <= 10 && secondsLeft > 0 && sound) playTick(secondsLeft)
+    if (secondsLeft === 0 && !autoEnded.current) {
+      autoEnded.current = true
+      if (sound) playLockdown()
+      escGame({ action: 'end_game', game_id: gameId, host_token: hostToken }).then(load).catch(() => {})
+    }
+  }, [secondsLeft, sound, gameId, hostToken, load])
+
+  function toggleSound() {
+    setSound((on) => {
+      setSoundOn(!on)
+      return !on
+    })
+  }
 
   async function act(payload) {
     setBusy(true)
@@ -107,11 +148,37 @@ export default function Race({ session, onLobby, onNewGame }) {
             <span className="font-mono text-xl font-black tracking-widest text-accent">{joinCode}</span>
           </p>
         </div>
-        <div className={`rounded-xl border-2 border-bad bg-black/60 px-6 py-2 text-center ${running ? 'alarm' : ''}`}>
-          <Label>{finished ? 'Final time' : 'Time'}</Label>
-          <p className="font-mono text-6xl font-black tabular-nums text-bad glow-bad">{clock(elapsed)}</p>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={toggleSound}
+            aria-pressed={sound}
+            title={sound ? 'Sound effects on (click to mute)' : 'Sound effects off (click to turn on)'}
+            className="rounded-lg border border-line bg-black/60 px-3 py-2 text-xl hover:border-accent"
+          >
+            {sound ? '🔊' : '🔇'}
+          </button>
+          <div className={`rounded-xl border-2 border-bad bg-black/60 px-6 py-2 text-center ${running ? 'alarm' : ''}`}>
+            <Label>{finished ? 'Final time' : 'Time'}</Label>
+            <p className="font-mono text-6xl font-black tabular-nums text-bad glow-bad">{clock(elapsed)}</p>
+          </div>
         </div>
       </header>
+
+      {countdownLeft !== null && (
+        <div
+          role="timer"
+          aria-live="polite"
+          className={`mx-auto mb-5 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 overflow-hidden rounded-xl border-2 border-bad bg-bad-soft px-6 py-3 ${countdownLeft <= 10 ? 'shake' : 'alarm'}`}
+          key={countdownLeft <= 10 ? secondsLeft : 'countdown'}
+        >
+          <p className="font-display text-lg font-black uppercase tracking-widest text-bad glow-bad sm:text-2xl">
+            🚨 {firstOut?.name ?? 'A team'} escaped!
+            <span className="block text-sm text-ink">Everyone else: get out before the vault locks down.</span>
+          </p>
+          <p className="font-mono text-6xl font-black tabular-nums text-bad glow-bad sm:text-7xl">{clock(countdownLeft)}</p>
+        </div>
+      )}
 
       {error && <p className="mx-auto mb-3 max-w-6xl rounded-lg bg-panel p-2 font-bold text-bad">{error}</p>}
       {!race && !error && <p className="mx-auto max-w-6xl">Loading the race…</p>}
@@ -150,26 +217,16 @@ export default function Race({ session, onLobby, onNewGame }) {
                   </p>
                 </div>
 
-                <div className="mt-3 flex flex-wrap gap-2" aria-label={`${row.locks_open} of ${game.lock_count} locks open`}>
-                  {Array.from({ length: game.lock_count }, (_, k) => {
-                    const open = k < row.locks_open
-                    const current = !row.escaped && k === row.current_lock
-                    return (
-                      <span
-                        key={k}
-                        className={`relative flex items-center justify-center rounded-lg border-2 ${game.lock_count > 15 ? 'h-10 w-10 text-lg' : 'h-14 w-14 text-2xl'} ${
-                          open ? 'unlock-pop border-ok bg-ok-soft box-glow-ok'
-                            : current ? 'animate-pulse border-accent bg-warn-soft box-glow-accent'
-                            : 'border-line bg-panel opacity-50 grayscale'
-                        }`}
-                        title={`Lock ${k + 1}${open ? ': open' : current ? ': working on it' : ''}${row.hinted_locks.includes(k) ? ' (hint used)' : ''}`}
-                      >
-                        {open ? '🔓' : '🔒'}
-                        <span className="absolute bottom-0.5 right-1 font-mono text-[10px] font-bold text-muted">{k + 1}</span>
-                      </span>
-                    )
-                  })}
-                  <span className="self-center font-display text-lg font-black text-muted">{row.locks_open}/{game.lock_count}</span>
+                <div className="mt-3 flex items-center gap-3">
+                  <div className="min-w-0 flex-1">
+                    <LockStrip
+                      count={game.lock_count}
+                      open={row.locks_open}
+                      current={row.escaped ? null : row.current_lock}
+                      hinted={row.hinted_locks}
+                    />
+                  </div>
+                  <span className="shrink-0 font-display text-lg font-black text-muted">{row.locks_open}/{game.lock_count}</span>
                 </div>
 
                 {running && !row.escaped && (

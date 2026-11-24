@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { escPlay, watchGame } from './api'
 import PictureZoom from './questions/PictureZoom'
 import QuestionImage from './questions/QuestionImage'
+import LockStrip from './LockStrip'
 import { clock } from './time'
 import { Button, CenterCard, HazardTape, Label } from './ui'
 
@@ -220,20 +221,23 @@ function Room({ saved, onLeave }) {
   }
 
   const locks = (
-    <div className="mb-4 flex flex-wrap justify-center gap-1.5" aria-label={`${team?.locks_open ?? 0} of ${game.lock_count} locks open`}>
-      {Array.from({ length: game.lock_count }, (_, k) => (
-        <span
-          key={k}
-          className={`flex items-center justify-center rounded-md border-2 ${game.lock_count > 15 ? 'h-7 w-7 text-sm' : 'h-9 w-9 text-lg'} ${
-            k < (team?.locks_open ?? 0) ? 'unlock-pop border-ok bg-ok-soft box-glow-ok'
-              : k === team?.current_lock ? 'animate-pulse border-accent bg-warn-soft box-glow-accent'
-              : 'border-line bg-panel opacity-50 grayscale'
-          }`}
-        >
-          {k < (team?.locks_open ?? 0) ? '🔓' : '🔒'}
-        </span>
-      ))}
+    <div className="mb-4">
+      <LockStrip
+        count={game.lock_count}
+        open={team?.locks_open ?? 0}
+        current={team?.escaped ? null : team?.current_lock ?? null}
+        size="sm"
+      />
     </div>
+  )
+
+  // The final countdown (a team escaped): shown to everyone still inside
+  const deadline = game.final_countdown_ends_at ? Date.parse(game.final_countdown_ends_at) : null
+  const countdownLeft = game.status === 'playing' && deadline !== null ? Math.max(0, (deadline - (now + offset)) / 1000) : null
+  const countdown = countdownLeft !== null && !team?.escaped && (
+    <p role="timer" className={`mb-4 rounded-lg border-2 border-bad bg-bad-soft px-3 py-2 text-center font-display text-sm font-black uppercase tracking-wide text-bad ${countdownLeft <= 10 ? 'shake' : 'alarm'}`}>
+      🚨 A team escaped! Lockdown in <span className="font-mono text-2xl glow-bad">{clock(countdownLeft)}</span>
+    </p>
   )
 
   // Escaped, or the game is over
@@ -268,6 +272,7 @@ function Room({ saved, onLeave }) {
         <HazardTape />
         <div className="p-5">
         {header}
+        {countdown}
         {locks}
 
         {lock ? (
