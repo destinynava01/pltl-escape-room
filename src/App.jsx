@@ -84,6 +84,7 @@ function LeaderApp() {
       <CenterCard title={SITE_NAME}>
         <p className="mt-4 text-muted">Teams race to crack a chain of locks. One wrong answer at a time.</p>
         <Button className="mt-6" onClick={() => setScreen('lobby')}>🔓 Open Leader Lobby</Button>
+        <a href="https://pltl-game-hub.vercel.app" className="mt-4 block text-sm font-bold text-info hover:brightness-125">← All games</a>
       </CenterCard>
     )
   }

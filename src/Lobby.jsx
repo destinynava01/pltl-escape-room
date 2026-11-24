@@ -177,6 +177,8 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
         <h1 className="mt-2 font-display text-4xl font-black uppercase tracking-widest text-accent glow-accent">Leader Lobby</h1>
         <p className="mt-3 text-muted">Manage students and prepare your teams before the escape begins.</p>
         <p className="mt-2 text-sm font-bold">
+          <a href="https://pltl-game-hub.vercel.app" className="text-info hover:brightness-125">← All games</a>
+          <span className="mx-2 text-muted">·</span>
           <a href="/submit" className="text-info hover:brightness-125">Submit questions</a>
           <span className="mx-2 text-muted">·</span>
           <a href="/review" className="text-info hover:brightness-125">Review queue</a>
