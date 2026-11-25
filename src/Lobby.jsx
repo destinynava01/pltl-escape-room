@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import HowToPlay from './HowToPlay'
+import { SLIDES as HOW_TO_SLIDES } from './howToSlides'
 import { QRCodeSVG } from 'qrcode.react'
 import { escGame, watchGame } from './api'
 import { DEFAULT_HINT_PENALTY, DEFAULT_LOCKS, LOCK_CHOICES, MAX_TEAMS, MIN_TEAMS, SITE_NAME, TEAM_COLORS } from './config'
@@ -30,6 +32,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
   const [pickedTopics, setPickedTopics] = useState([]) // topic ids
   const [lockCount, setLockCount] = useState(DEFAULT_LOCKS)
   const [busy, setBusy] = useState(false)
+  const [guide, setGuide] = useState(false) // the how-to guide, shown when Start is pressed (before the clock starts)
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [players, setPlayers] = useState([]) // students who joined from their phones
@@ -163,6 +166,8 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
 
   return (
     <main className="vault-bg min-h-dvh p-4 text-ink sm:p-8">
+      {/* Start shows the how-to guide first; the game (and its clock) starts when it closes */}
+      {guide && <HowToPlay site="escape" gameId="lobby" name="Escape Room" accent="#ffb020" slides={HOW_TO_SLIDES} open onClose={() => { setGuide(false); start() }} />}
       {hasGame && (
         <button
           onClick={onOpenRace}
@@ -390,7 +395,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                   </div>
                   <p className="mt-1 text-xs text-muted">A hint adds {DEFAULT_HINT_PENALTY} seconds to that team&apos;s time.</p>
 
-                  <Button className="mt-4 w-full text-lg" disabled={busy || pickedTopics.length === 0 || questionEstimate < lockCount} onClick={start}>
+                  <Button className="mt-4 w-full text-lg" disabled={busy || pickedTopics.length === 0 || questionEstimate < lockCount} onClick={() => (howToSkipped('escape') ? start() : setGuide(true))}>
                     {busy ? 'Starting…' : 'Start the Escape'}
                   </Button>
                 </>
@@ -487,4 +492,13 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
       </section>
     </main>
   )
+}
+
+// The leader turned the how-to guide off on this computer ("Don't show this again")
+function howToSkipped(site) {
+  try {
+    return Boolean(localStorage.getItem(`pltlHowToSkip:${site}`))
+  } catch {
+    return false
+  }
 }
