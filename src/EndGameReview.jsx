@@ -100,7 +100,7 @@ export default function EndGameReview({ gameId, hostToken, onClose }) {
                   style={{ boxShadow: `inset 0 0 0 1px ${team.color}55` }}
                 >
                   <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5" style={{ background: team.color }} />
-                  <p className="font-display text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: team.color }}>
+                  <p className="font-display text-xs font-bold uppercase tracking-[0.3em]" style={{ color: team.color }}>
                     Team {String(t + 1).padStart(2, '0')} · {opened}/{locks.length} opened
                   </p>
                   <p className="font-mono text-lg font-black">{team.name}</p>

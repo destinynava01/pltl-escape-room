@@ -260,7 +260,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                     {finalized ? '🔒' : '🔓'}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.35em]" style={{ color: TEAM_COLORS[i] }}>
+                    <p className="font-display text-xs font-bold uppercase tracking-[0.35em]" style={{ color: TEAM_COLORS[i] }}>
                       Team {String(i + 1).padStart(2, '0')}{finalized && ' · sealed'}
                     </p>
                     <input
@@ -463,7 +463,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
                 return (
                   <div key={i} className="relative overflow-hidden rounded-lg border border-line bg-black/40 py-3 pl-5 pr-3">
                     <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5" style={{ background: TEAM_COLORS[i] }} />
-                    <p className="font-display text-[10px] font-bold uppercase tracking-[0.3em]" style={{ color: TEAM_COLORS[i] }}>
+                    <p className="font-display text-xs font-bold uppercase tracking-[0.3em]" style={{ color: TEAM_COLORS[i] }}>
                       Team {String(i + 1).padStart(2, '0')} · {members.length} inside
                     </p>
                     <p className="font-mono font-black">🔒 {teamLabel(i)}</p>

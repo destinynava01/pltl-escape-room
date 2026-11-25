@@ -37,7 +37,7 @@ export default function LockStrip({ count, open, current = null, hinted = [], si
             title={`Lock ${k + 1}${isOpen ? ': open' : isCurrent ? ': working on it' : ''}${hinted.includes(k) ? ' (hint used)' : ''}`}
           >
             {isOpen ? '🔓' : '🔒'}
-            {size === 'lg' && <span className="absolute bottom-0.5 right-1 font-mono text-[10px] font-bold text-muted">{k + 1}</span>}
+            {size === 'lg' && <span className="absolute bottom-0.5 right-1 font-mono text-xs font-bold text-muted">{k + 1}</span>}
           </span>
         )
       })}

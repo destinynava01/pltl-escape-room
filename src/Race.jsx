@@ -141,7 +141,7 @@ export default function Race({ session, onLobby, onNewGame }) {
       <HazardTape className="-mx-4 -mt-4 mb-4 h-3 sm:-mx-6 sm:-mt-6" />
       <header className="mx-auto mb-5 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">
+          <p className="font-display text-sm font-bold uppercase tracking-[0.4em] text-bad">
             {finished ? '■ Lockdown lifted' : running ? '● Escape in progress' : 'Standing by'}
           </p>
           <h1 className="mt-1 font-display text-3xl font-black uppercase tracking-widest text-accent glow-accent sm:text-5xl">
@@ -214,7 +214,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                       {row.escaped ? `🎉 ${clock(timeOf(row))}` : clock(timeOf(row))}
                     </span>
                     {row.penalty_seconds > 0 && (
-                      <span className="block text-xs font-bold text-muted">
+                      <span className="block text-sm font-bold text-muted">
                         +{clock(row.penalty_seconds)} added
                         {row.hints > 0 && ` · 💡 ${row.hints} hint${row.hints === 1 ? '' : 's'}`}
                         {row.miss_penalty_seconds > 0 && ` · ✗ +${clock(row.miss_penalty_seconds)} wrong guesses`}
@@ -251,7 +251,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                         disabled={busy}
                         onClick={() => act({ action: 'pass_key', team_index: row.team_index })}
                         title="Give this lock to the next teammate (if the key-holder is stuck or has left)"
-                        className="rounded-md border border-line px-2 py-1 text-xs font-bold text-muted hover:bg-hover disabled:opacity-40"
+                        className="rounded-md border border-line px-2 py-1 text-sm font-bold text-muted hover:bg-hover disabled:opacity-40"
                       >
                         ⇢ Pass key
                       </button>
@@ -266,22 +266,22 @@ export default function Race({ session, onLobby, onNewGame }) {
           <aside className="space-y-3">
             <div className="rounded-xl border-2 border-warn bg-card p-4">
               <p className="font-display font-black uppercase tracking-widest text-warn">⚠ Close calls</p>
-              <p className="text-xs text-muted">
+              <p className="text-sm text-muted">
                 Wrong answers that are almost right. Accept one to open that team&apos;s lock.
               </p>
               {race.close_calls.length === 0 && <p className="mt-2 text-sm text-muted">None right now.</p>}
               <ul className="mt-2 space-y-2">
                 {race.close_calls.map((c) => (
                   <li key={c.id} className="rounded-lg border-2 border-line bg-panel p-2 text-sm">
-                    <p className="text-xs font-bold text-muted">{teamName(c.team_index)} · lock {c.lock_no + 1} · {c.student}</p>
+                    <p className="text-sm font-bold text-muted">{teamName(c.team_index)} · lock {c.lock_no + 1} · {c.student}</p>
                     <p className="font-bold">&ldquo;{c.answer}&rdquo;</p>
                     {shownKeys.includes(c.id) ? (
-                      <p className="text-xs text-ok">
+                      <p className="text-sm text-ok">
                         Key: <span className="font-bold">{c.answer_key}</span>
                         {c.also.length > 0 && ` (also: ${c.also.join(', ')})`}
                       </p>
                     ) : (
-                      <button type="button" className="text-xs font-bold text-info underline" onClick={() => setShownKeys((k) => [...k, c.id])}>
+                      <button type="button" className="text-sm font-bold text-info underline" onClick={() => setShownKeys((k) => [...k, c.id])}>
                         👁 Show the answer key (the room can see it)
                       </button>
                     )}
@@ -290,7 +290,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                         type="button"
                         disabled={busy || !running}
                         onClick={() => act({ action: 'accept_attempt', attempt_id: c.id })}
-                        className="rounded-md border-2 border-line bg-ok px-3 py-1 text-xs font-bold text-on-accent hover:brightness-110 disabled:opacity-40"
+                        className="rounded-md border-2 border-line bg-ok px-3 py-1 text-sm font-bold text-on-accent hover:brightness-110 disabled:opacity-40"
                       >
                         ✓ Accept
                       </button>
@@ -324,7 +324,7 @@ export default function Race({ session, onLobby, onNewGame }) {
           <section className="my-auto w-full max-w-lg overflow-hidden rounded-2xl border-2 border-accent bg-card text-center text-ink shadow-2xl box-glow-accent">
             <HazardTape className="h-3" />
             <div className="p-8">
-            <p className="font-display text-xs font-bold uppercase tracking-[0.4em] text-bad">■ Lockdown lifted</p>
+            <p className="font-display text-sm font-bold uppercase tracking-[0.4em] text-bad">■ Lockdown lifted</p>
             <div className="mt-2 text-6xl">🏆</div>
             <h2 className="mt-4 font-display text-3xl font-black uppercase tracking-wide text-accent glow-accent">
               {winners.length === 1 ? `${winners[0].name} wins!` : `Tie: ${winners.map((w) => w.name).join(' & ')}`}
@@ -343,7 +343,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                   </span>
                   <span className="text-right">
                     {row.escaped ? `🎉 ${clock(row.total_seconds)}` : `${row.locks_open}/${game.lock_count} locks`}
-                    {row.penalty_seconds > 0 && <span className="block text-xs text-muted">+{clock(row.penalty_seconds)} added</span>}
+                    {row.penalty_seconds > 0 && <span className="block text-sm text-muted">+{clock(row.penalty_seconds)} added</span>}
                   </span>
                 </p>
               ))}
@@ -355,7 +355,7 @@ export default function Race({ session, onLobby, onNewGame }) {
                 {downloading ? 'Preparing...' : '⬇️ Download results (.xlsx)'}
               </Button>
             </div>
-            <p className="mt-2 text-xs text-muted">
+            <p className="mt-2 text-sm text-muted">
               Do these before starting a new game. New game closes this one, and game data is cleared after 8 hours.
             </p>
             {error && <p className="mt-2 text-sm font-bold text-bad">{error}</p>}
