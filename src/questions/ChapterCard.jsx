@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import MathText from '../MathText'
 
 // A default game has 6 locks, each asking one question from the chapter
 const LOCKS_PER_GAME = 6
@@ -59,7 +60,7 @@ export default function ChapterCard({ chapter, highlight = false }) {
             <ul className="mt-2 space-y-1 rounded-md bg-card p-2 text-xs">
               {questions.map((question, index) => (
                 <li key={index} className="text-ink">
-                  {question.question_text}
+                  <MathText text={question.question_text} />
                   {question.has_picture && <span className="ml-1 text-muted">🖼️</span>}
                   {question.status === 'pending' && (
                     <span className="ml-1 text-[10px] font-bold uppercase text-accent">waiting for review</span>

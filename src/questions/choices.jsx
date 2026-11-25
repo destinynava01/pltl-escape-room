@@ -1,10 +1,11 @@
 import { parseChoice } from './choiceUtils'
 import { imageUrl } from './images'
+import MathText from '../MathText'
 
 // Shows a choice's picture (if any) with its text (if any)
 export function ChoiceContent({ choice, imageClassName = 'max-h-32' }) {
   const { path, text } = parseChoice(choice)
-  if (!path) return <>{choice}</>
+  if (!path) return <MathText text={choice} />
 
   return (
     <span className="inline-flex max-w-full flex-col items-start gap-1 align-middle">
@@ -13,7 +14,7 @@ export function ChoiceContent({ choice, imageClassName = 'max-h-32' }) {
         alt={text || 'Answer choice picture'}
         className={`w-auto max-w-full rounded-md bg-panel object-contain ${imageClassName}`}
       />
-      {text && <span>{text}</span>}
+      {text && <span><MathText text={text} /></span>}
     </span>
   )
 }

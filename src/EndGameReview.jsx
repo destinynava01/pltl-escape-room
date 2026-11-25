@@ -3,6 +3,7 @@ import { escGame } from './api'
 import { FLAG_REASONS } from './questions/flagReasons'
 import PictureZoom from './questions/PictureZoom'
 import QuestionImage from './questions/QuestionImage'
+import MathText from './MathText'
 
 // Shared with the Jeopardy and Monopoly sites' key, so a leader's name is remembered across all of them
 const NAME_KEY = 'pltlLeaderName'
@@ -125,7 +126,7 @@ export default function EndGameReview({ gameId, hostToken, onClose }) {
                         {round.question.image_path && (
                           <QuestionImage path={round.question.image_path} className="mt-2 max-h-28" />
                         )}
-                        <span className="mt-2 block text-sm font-bold leading-snug">{round.question.question_text}</span>
+                        <span className="mt-2 block text-sm font-bold leading-snug"><MathText text={round.question.question_text} /></span>
                         <span className="mt-1 block text-sm text-ok">Answer: <span className="font-bold">{round.question.answer_text}</span></span>
                         <span className={`mt-2 inline-block rounded-md border px-2 py-0.5 text-xs font-bold ${mine.opened ? 'border-ok bg-ok-soft text-ok' : 'border-line bg-panel text-muted'}`}>
                           {mine.opened ? `Opened · ${mine.attempts} ${mine.attempts === 1 ? 'try' : 'tries'}` : 'Not opened'}
@@ -207,7 +208,7 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
           </button>
         </div>
 
-        <h3 className="mt-3 text-xl font-bold">{question.question_text}</h3>
+        <h3 className="mt-3 text-xl font-bold"><MathText text={question.question_text} /></h3>
         {question.image_path && (
           <button type="button" onClick={() => setZoomed(true)} className="group relative mx-auto mt-3 block" aria-label="Zoom in on the picture">
             <QuestionImage path={question.image_path} className="max-h-64" />
@@ -223,8 +224,8 @@ function QuestionReview({ round, teamName, gameId, hostToken, onClose, onFlagged
             onClose={() => setZoomed(false)}
             panel={
               <div className="text-center">
-                <p className="text-sm font-bold text-ink">{question.question_text}</p>
-                <p className="mt-2 font-bold text-ok">Answer: {question.answer_text}</p>
+                <p className="text-sm font-bold text-ink"><MathText text={question.question_text} /></p>
+                <p className="mt-2 font-bold text-ok">Answer: <MathText text={question.answer_text} /></p>
                 <button type="button" onClick={() => setZoomed(false)} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
                   Back
                 </button>

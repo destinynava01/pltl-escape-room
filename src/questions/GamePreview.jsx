@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import PictureZoom from './PictureZoom'
 import QuestionImage from './QuestionImage'
+import MathText from '../MathText'
 
 // "Preview in game": the question as a lock on a student's phone (the projector doesn't show questions
 // in Escape Room). `question` is { question_text, image_path, answer_text, accepted_answers }.
@@ -111,7 +112,7 @@ function PhoneView({ question, lockNumber, revealed, onZoom }) {
         {revealed ? (
           <div className="mt-4 rounded-lg border-2 border-ok bg-ok-soft p-3 text-center">
             <p className="text-xs font-bold uppercase tracking-wider text-ok">Answer</p>
-            <p className="mt-1 font-bold text-ink">{question.answer_text?.trim() || '(no answer yet)'}</p>
+            <p className="mt-1 font-bold text-ink">{question.answer_text?.trim() ? <MathText text={question.answer_text} /> : '(no answer yet)'}</p>
             {alternatives.length > 0 && (
               <p className="mt-1 text-sm text-muted">Also accepted: {alternatives.join(', ')}</p>
             )}
@@ -144,7 +145,7 @@ function ZoomPanel({ question, lockNumber, onBack }) {
   return (
     <div className="text-center text-ink">
       <p className="text-xs font-bold uppercase tracking-widest text-info">🔒 Lock {lockNumber}</p>
-      <p className="mt-1 text-sm font-bold">{question.question_text}</p>
+      <p className="mt-1 text-sm font-bold"><MathText text={question.question_text} /></p>
       <button type="button" onClick={onBack} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
         Back to the lock
       </button>

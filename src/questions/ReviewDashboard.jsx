@@ -11,6 +11,7 @@ import { OpenAnswerField } from './choices'
 import { supabase } from '../supabase'
 import SubjectManager from '../SubjectManager'
 import { HazardTape } from '../ui'
+import MathText from '../MathText'
 
 const UTRGV_EMAIL = /^[^@\s]+@utrgv\.edu$/i
 // A default game has 6 locks, each asking one question from the chapter
@@ -1011,7 +1012,7 @@ function QuestionPreview({ title, subtitle, question }) {
     <div className="rounded-lg bg-panel p-3">
       <p className="text-xs font-bold uppercase tracking-wider text-info">{title}</p>
       <p className="text-[11px] text-muted">{subtitle}</p>
-      <p className="mt-2 font-bold text-ink">{question.question_text}</p>
+      <p className="mt-2 font-bold text-ink"><MathText text={question.question_text} /></p>
       {question.image_path && <QuestionImage path={question.image_path} className="mt-2 max-h-40" />}
       <AnswerKey question={question} className="mt-2" />
     </div>
@@ -1274,7 +1275,7 @@ function BankResults({ filters, catalog = [], compact = false }) {
                   !compact && editingId === question.id ? 'md:col-span-2' : ''
                 }`}
               >
-                <p className="font-bold text-ink">{question.question_text}</p>
+                <p className="font-bold text-ink"><MathText text={question.question_text} /></p>
                 {question.image_path && <QuestionImage path={question.image_path} className="mt-2 max-h-40" />}
                 <AnswerKey question={question} className="mt-1" />
                 <p className="mt-2 text-[11px] text-muted">

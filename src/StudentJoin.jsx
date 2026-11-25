@@ -5,6 +5,7 @@ import QuestionImage from './questions/QuestionImage'
 import LockStrip from './LockStrip'
 import { clock } from './time'
 import { Button, CenterCard, HazardTape, Label } from './ui'
+import MathText from './MathText'
 
 const STORAGE_KEY = 'pltlEscapeStudent'
 const DEVICE_KEY = 'pltlEscapeDevice'
@@ -293,7 +294,7 @@ function Room({ saved, onLeave }) {
                 {lock.key_holder.mine ? '🔑 Your key · you answer this lock' : `🔑 ${lock.key_holder.name} holds this key`}
               </p>
             )}
-            <h1 className="mt-2 text-xl font-bold leading-snug">{lock.question_text}</h1>
+            <h1 className="mt-2 text-xl font-bold leading-snug"><MathText text={lock.question_text} /></h1>
             <ZoomablePicture path={lock.image_path} onZoom={() => setZoomed(lock.image_path)} />
             {/* Closes on its own when the lock changes (a different picture) */}
             {zoomed && zoomed === lock.image_path && (
@@ -304,7 +305,7 @@ function Room({ saved, onLeave }) {
                 panel={
                   <div className="text-center">
                     <p className="font-display text-xs font-bold uppercase tracking-widest text-accent">🔒 Lock {lock.lock_no + 1} / {game.lock_count}</p>
-                    <p className="mt-1 text-sm font-bold text-ink">{lock.question_text}</p>
+                    <p className="mt-1 text-sm font-bold text-ink"><MathText text={lock.question_text} /></p>
                     {lock.hint && <p className="mt-2 font-mono text-lg font-black tracking-wider text-ink">💡 {lock.hint}</p>}
                     <button type="button" onClick={() => setZoomed(null)} className="mt-3 w-full rounded-lg bg-accent px-4 py-2 font-bold text-on-accent">
                       {lock.key_holder?.mine ? 'Back to answer' : 'Back to the lock'}
@@ -317,7 +318,7 @@ function Room({ saved, onLeave }) {
             {lock.reveal && (
               <div className="mt-3 rounded-lg border-2 border-warn bg-warn-soft p-3 text-center">
                 <p className="font-display text-xs font-black uppercase tracking-widest text-warn">Out of guesses on the last lock</p>
-                <p className="mt-1">The answer was <span className="font-mono text-lg font-black text-ink">{lock.reveal.answer}</span></p>
+                <p className="mt-1">The answer was <span className="font-mono text-lg font-black text-ink"><MathText text={lock.reveal.answer} /></span></p>
                 <p className="mt-1 text-sm text-muted">
                   {lock.reveal.comes_back_in > 0
                     ? `That question comes back in ${lock.reveal.comes_back_in} lock${lock.reveal.comes_back_in === 1 ? '' : 's'}. Remember it!`

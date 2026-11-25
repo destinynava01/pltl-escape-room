@@ -8,6 +8,7 @@ import { uploadQuestionImage } from './images'
 import QuestionImage from './QuestionImage'
 import { OpenAnswerField } from './choices'
 import { HazardTape } from '../ui'
+import { MathPreview } from '../MathText'
 
 // The server accepts up to 20 per submission for Escape Room (one chapter)
 const MAX_QUESTIONS = 20
@@ -508,6 +509,8 @@ export default function SubmitQuestions() {
               required
               className={inputClass}
             />
+            <MathPreview text={question.question_text} className="border-current" />
+            <p className="-mt-1 text-xs opacity-70">{'For math, put it between dollar signs: $x^2$, $\\frac{1}{2}$, $\\sqrt{x}$, $e^{3x}$, $\\ln x$. Keep typed answers plain (1/2, x^2) so students can type them.'}</p>
 
             {/* Optional picture, e.g. a labeled diagram or micrograph */}
             {question.image_path ? (
