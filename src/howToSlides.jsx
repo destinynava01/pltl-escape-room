@@ -49,3 +49,22 @@ export const SLIDES = [
     art: <p className="rounded-xl border-2 border-red-500 bg-red-500/10 px-6 py-4 text-center font-mono text-5xl font-black text-red-400">4:59</p>,
   },
 ]
+
+// The guide's own look (the vault: a dark steel panel with hazard stripes, amber Orbitron lettering). HowToPlay.jsx reads this; anything left out uses its plain dark look.
+export const SKIN = {
+  backdrop: 'bg-black/85',
+  panel: 'rounded-xl border-2 border-accent/60 bg-card text-ink shadow-2xl before:block before:h-2 before:content-[\'\'] before:[background:repeating-linear-gradient(-45deg,#ffb020_0_14px,#0b0b0b_14px_28px)]',
+  glow: false,
+  label: 'font-mono text-sm uppercase tracking-[0.3em] text-accent',
+  skip: 'rounded-md border border-line px-3 py-1 font-mono text-sm text-muted hover:bg-hover hover:text-ink',
+  art: 'vault-bg rounded-lg border border-line',
+  step: 'font-mono text-sm uppercase tracking-widest text-info',
+  title: 'font-display text-2xl font-black uppercase leading-tight tracking-wide text-accent sm:text-3xl',
+  text: 'text-lg leading-relaxed text-ink',
+  footer: 'border-t border-line bg-board/60',
+  check: 'font-mono text-sm text-muted',
+  back: 'rounded-md border border-line px-4 py-2 font-bold text-ink hover:bg-hover',
+  next: 'rounded-md bg-accent px-5 py-2 font-display font-black uppercase tracking-wider text-on-accent hover:brightness-110',
+  dotOff: '#33425a',
+  launcher: 'rounded-md border-2 border-accent bg-card px-4 py-2 font-mono text-sm font-bold text-accent shadow-lg hover:bg-hover',
+}
