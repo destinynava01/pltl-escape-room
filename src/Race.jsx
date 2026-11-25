@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import HowToPlay from './HowToPlay'
+import { SLIDES as HOW_TO_SLIDES } from './howToSlides'
 import { escGame, watchGame } from './api'
 import { SITE_NAME } from './config'
 import EndGameReview from './EndGameReview'
@@ -134,6 +136,8 @@ export default function Race({ session, onLobby, onNewGame }) {
 
   return (
     <Page>
+      {/* The visual how-to guide: opens once per game, skippable */}
+      <HowToPlay site="escape" gameId={gameId} name="Escape Room" accent="#ffb020" slides={HOW_TO_SLIDES} />
       <HazardTape className="-mx-4 -mt-4 mb-4 h-3 sm:-mx-6 sm:-mt-6" />
       <header className="mx-auto mb-5 flex w-full max-w-6xl flex-wrap items-center justify-between gap-4">
         <div>
