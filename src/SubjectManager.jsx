@@ -11,6 +11,8 @@ const GAMES = [
   { id: 'jeopardy', label: 'Jeopardy' },
   { id: 'monopoly', label: 'Monopoly' },
   { id: 'escape_room', label: 'Escape Room' },
+  { id: 'imposter', label: 'Imposter' },
+  { id: 'cascade', label: 'Cascade' },
 ]
 
 const inputClass =
