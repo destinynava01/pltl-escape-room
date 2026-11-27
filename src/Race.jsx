@@ -6,6 +6,7 @@ import { SITE_NAME } from './config'
 import EndGameReview from './EndGameReview'
 import { downloadResults } from './gameResults'
 import LockStrip from './LockStrip'
+import Peek from './Peek'
 import { playEscape, playLockdown, playTeamOut, playTick, setSoundOn, soundOn } from './sounds'
 import { clock } from './time'
 import { Button, HazardTape, Label, Page } from './ui'
@@ -22,6 +23,7 @@ export default function Race({ session, onLobby, onNewGame }) {
   const [shownKeys, setShownKeys] = useState([]) // close calls whose answer key the leader chose to see
   const [reviewing, setReviewing] = useState(false)
   const [downloading, setDownloading] = useState(false)
+  const [peek, setPeek] = useState(null) // the team the leader is peeking at
   const autoEnded = useRef(false)
   const [sound, setSound] = useState(soundOn) // the projector's sound effects (on by default)
   const escapedBefore = useRef(null) // how many teams had escaped at the last update, for the fanfare
@@ -256,6 +258,15 @@ export default function Race({ session, onLobby, onNewGame }) {
                         ⇢ Pass key
                       </button>
                     )}
+                    <button
+                      type="button"
+                      onClick={() => setPeek({ index: row.team_index, name: row.name })}
+                      title="See the lock this team is on and every guess they've typed"
+                      className="rounded-md border border-line px-2 py-1 text-sm font-bold text-info hover:bg-hover"
+                      aria-label={`Peek at ${row.name}`}
+                    >
+                      👀 Peek
+                    </button>
                   </div>
                 )}
               </div>
@@ -315,6 +326,8 @@ export default function Race({ session, onLobby, onNewGame }) {
           </aside>
         </div>
       )}
+
+      {peek && running && <Peek session={session} team={peek} stamp={race} onClose={() => setPeek(null)} />}
 
       {finished && reviewing && <EndGameReview gameId={gameId} hostToken={hostToken} onClose={() => setReviewing(false)} />}
 

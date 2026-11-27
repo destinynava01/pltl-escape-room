@@ -168,7 +168,7 @@ export default function SubjectManager({ isCreator }) {
                     }
                     className="accent-accent"
                   />
-                  Shared curriculum (no professors)
+                  Shared curriculum for every course (no professors)
                 </label>
               </div>
             )}
@@ -188,6 +188,23 @@ export default function SubjectManager({ isCreator }) {
                         : `${course.set_count} question set${course.set_count === 1 ? '' : 's'}`}
                     </span>
                   </span>
+                  {isCreator && (
+                    <label
+                      className="flex items-center gap-1 text-xs"
+                      title={subject.shared_curriculum ? 'The whole subject is a shared curriculum' : 'One shared question set for every professor of this course (no professor step)'}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={subject.shared_curriculum || !!course.shared_curriculum}
+                        disabled={subject.shared_curriculum}
+                        onChange={() =>
+                          run({ action: 'set_course_options', course_name: course.course_name, shared_curriculum: !course.shared_curriculum })
+                        }
+                        className="accent-accent"
+                      />
+                      Shared curriculum{subject.shared_curriculum && <span className="text-muted"> (whole subject)</span>}
+                    </label>
+                  )}
                   {course.set_count === 0 && (
                     <button
                       onClick={() => {
