@@ -167,7 +167,7 @@ export default function Lobby({ onStart, onOpenRace, hasGame, resume, onCloseGam
   return (
     <main className="vault-bg min-h-dvh p-4 text-ink sm:p-8">
       {/* Start shows the how-to guide first; the game (and its clock) starts when it closes */}
-      {guide && <HowToPlay site="escape" gameId="lobby" name="Escape Room" accent="#ffb020" slides={HOW_TO_SLIDES} open onClose={() => { setGuide(false); start() }} />}
+      {guide && <HowToPlay site="escape" gameId={session?.gameId ?? 'lobby'} name="Escape Room" accent="#ffb020" slides={HOW_TO_SLIDES} open onClose={() => { setGuide(false); start() }} />}
       {hasGame && (
         <button
           onClick={onOpenRace}
