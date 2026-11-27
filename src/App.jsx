@@ -9,6 +9,7 @@ import { SITE_NAME } from './config'
 import { readSession, saveSession } from './session'
 import { isConfigured } from './supabase'
 import { Button, CenterCard } from './ui'
+import { SLIDES as LANDING_SLIDES } from './howToSlides'
 
 // Routes:
 //   /          leader: landing -> lobby -> race (the projector)
@@ -82,6 +83,7 @@ function LeaderApp() {
   if (screen === 'landing') {
     return (
       <CenterCard title={SITE_NAME}>
+        <div className="mt-6 flex justify-center text-left [&>*]:max-w-full">{LANDING_SLIDES[0].art}</div>
         <p className="mt-4 text-muted">Teams race to crack a chain of locks. One wrong answer at a time.</p>
         <Button className="mt-6" onClick={() => setScreen('lobby')}>🔓 Open Leader Lobby</Button>
         <a href="https://pltl-game-hub.vercel.app" className="mt-4 block text-sm font-bold text-info hover:brightness-125">← All games</a>
