@@ -5,6 +5,7 @@ import BackToGame from './BackToGame'
 import ChapterCard from './ChapterCard'
 import GamePreviewButton from './GamePreview'
 import { uploadQuestionImage } from './images'
+import DiagramBuilder from './diagrams/DiagramBuilder'
 import QuestionImage from './QuestionImage'
 import { OpenAnswerField } from './choices'
 import { HazardTape } from '../ui'
@@ -250,6 +251,8 @@ export default function SubmitQuestions() {
   function addQuestion() {
     if (questions.length < MAX_QUESTIONS) setQuestions((current) => [...current, blankQuestion()])
   }
+
+  const [drawingFor, setDrawingFor] = useState(null) // the question the Diagram Builder is open for
 
   async function attachImage(index, file) {
     if (!file) return
@@ -525,6 +528,7 @@ export default function SubmitQuestions() {
                 </button>
               </div>
             ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
               <label
                 className={`flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-line px-3 py-2 text-sm text-muted hover:bg-hover ${
                   question.uploading ? 'pointer-events-none opacity-60' : ''
@@ -541,6 +545,13 @@ export default function SubmitQuestions() {
                 />
                 {question.uploading ? 'Uploading picture...' : '🖼️ Add a picture (optional)'}
               </label>
+              <button type="button" disabled={question.uploading} onClick={() => setDrawingFor(index)} className="flex items-center justify-center gap-2 rounded-lg border border-dashed border-line px-3 py-2 text-sm text-muted hover:bg-hover disabled:opacity-60">
+                ✏️ Draw a diagram (circuits, statics)
+              </button>
+              </div>
+            )}
+            {drawingFor === index && (
+              <DiagramBuilder onClose={() => setDrawingFor(null)} onAttach={(file) => { setDrawingFor(null); attachImage(index, file) }} />
             )}
 
             {duplicates[index]?.length > 0 && (
